@@ -8,6 +8,47 @@ import './setting.dart';
 import 'dart:io';
 
 const String strCnsSqlCreateRireki ="CREATE TABLE IF NOT EXISTS rireki(id INTEGER PRIMARY KEY, goaltime TEXT, realtime TEXT, status TEXT, kaku1 INTEGER, kaku2 INTEGER, kaku3 TEXT, kaku4 TEXT)";
+//-------------------------------------------------------------
+//   DB
+//-------------------------------------------------------------
+/*------------------------------------------------------------------
+全共通のメソッド
+ -------------------------------------------------------------------*/
+//初回起動分の処理
+Future<void> firstRun() async {
+  String dbpath = await getDatabasesPath();
+  //設定テーブル作成
+  String path = p.join(dbpath, "internal_assets.db");
+  //設定テーブルがなければ、最初にassetsから作る
+  var exists = await databaseExists(path);
+  if (!exists) {
+    // Make sure the parent directory exists
+    //親ディレクリが存在することを確認
+    try {
+      await Directory(p.dirname(path)).create(recursive: true);
+    } catch (_) {}
+
+    // Copy from asset
+    ByteData data = await rootBundle.load(p.join("assets", "external_assets.db"));
+    List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+
+    // Write and flush the bytes written
+    await File(path).writeAsBytes(bytes, flush: true);
+
+  } else {
+    //print("Opening existing database");
+  }
+  //履歴テーブル作成
+  path = p.join(dbpath, "rireki.db");
+  await openDatabase(path, version: 1,
+      onCreate: (Database db, int version) async {
+        await db.execute(strCnsSqlCreateRireki);
+      });
+}
+
+//-------------------------------------------------------------
+//   main
+//-------------------------------------------------------------
 void main() {
   //SQLfliteで必要？
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,9 +87,15 @@ class _MyHomePageState extends State<MyHomePage> {
   bool habitsFlg = false;
   MaterialColor primaryColor = Colors.orange;
   String strStarstop = 'START';
+  int intNum = 1;//実行回数
+  int intComboNum = 2;//連続実行回数
+  int intDueNum = 3;//開始時間守った回数
+  int intComboDueNum = 4;//連続で開始時間守った回数
+  int intRestart = 5;//習慣再開回数
   @override
   void initState() {
     super.initState();
+    loadPref();
   }
   @override
   Widget build(BuildContext context) {
@@ -84,7 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children:  <Widget>[
                       Text('習慣実行回数',style:TextStyle(fontSize: 20.0)),
-                      Text('回',style:TextStyle(fontSize: 20.0))
+                      Text('$intNum回',style:TextStyle(fontSize: 20.0))
                     ],
                   ),
                 ),
@@ -101,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children:  <Widget>[
                       Text('習慣連続実行回数',style:TextStyle(fontSize: 20.0)),
-                      Text('回',style:TextStyle(fontSize: 20.0))
+                      Text('$intComboNum回',style:TextStyle(fontSize: 20.0))
                     ],
                   ),
                 ),
@@ -118,7 +165,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children:  <Widget>[
                       Text('開始時間前に始めた回数',style:TextStyle(fontSize: 20.0)),
-                      Text('回',style:TextStyle(fontSize: 20.0))
+                      Text('$intDueNum回',style:TextStyle(fontSize: 20.0))
                     ],
                   ),
                 ),
@@ -135,7 +182,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children:  <Widget>[
                       Text('開始時間前に始めた連続回数',style:TextStyle(fontSize: 20.0)),
-                      Text('回',style:TextStyle(fontSize: 20.0))
+                      Text('$intComboDueNum回',style:TextStyle(fontSize: 20.0))
                     ],
                   ),
                 ),
@@ -171,11 +218,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
   Future<void> buttonPressed() async {
-    // habitsFlg = !habitsFlg;
-    // setState(() {
-    //   primaryColor = habitsFlg ?  Colors.blue:Colors.orange;
-    //   strStarstop = habitsFlg ?  'STOP':'START';
-    // });
       showDialog(
           context: context,
           builder: (BuildContext context) => AlertDialog(
@@ -216,36 +258,23 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
   }
-}
-
-//初回起動分の処理
-Future<void> firstRun() async {
-  String dbpath = await getDatabasesPath();
-  //設定テーブル作成
-  String path = p.join(dbpath, "internal_assets.db");
-  //設定テーブルがなければ、最初にassetsから作る
-  var exists = await databaseExists(path);
-  if (!exists) {
-    // Make sure the parent directory exists
-    //親ディレクリが存在することを確認
-    try {
-      await Directory(p.dirname(path)).create(recursive: true);
-    } catch (_) {}
-
-    // Copy from asset
-    ByteData data = await rootBundle.load(p.join("assets", "external_assets.db"));
-    List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-
-    // Write and flush the bytes written
-    await File(path).writeAsBytes(bytes, flush: true);
-
-  } else {
-    //print("Opening existing database");
+  /*------------------------------------------------------------------
+第一画面ロード
+ -------------------------------------------------------------------*/
+  void loadPref() async {
+    String dbPath = await getDatabasesPath();
+    String path = p.join(dbPath, 'internal_assets.db');
+     Database database = await openDatabase(path, version: 1);
+     List<Map> result = await database.rawQuery("SELECT num,combo_num,due_num,combodue_num,restart From habits  limit 1");
+     for (Map item in result) {
+       setState(() {
+         intNum = item['num'];
+         intComboNum = item['combo_num'];
+         intDueNum = item['due_num'];
+         intComboDueNum = item['combodue_num'];
+         intRestart = item['restart'];
+       });
+    }
   }
-  //履歴テーブル作成
-  path = p.join(dbpath, "rireki.db");
-  await openDatabase(path, version: 1,
-      onCreate: (Database db, int version) async {
-        await db.execute(strCnsSqlCreateRireki);
-      });
+
 }

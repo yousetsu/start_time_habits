@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_picker/flutter_picker.dart';
+import 'package:path/path.dart' as p;
+import 'package:sqflite/sqflite.dart';
 class SettingScreen extends StatefulWidget {
   const SettingScreen({Key? key}) : super(key: key); //コンストラクタ
   @override
@@ -18,9 +20,12 @@ class _SettingScreenState extends State<SettingScreen> {
   DateTime normalTime = DateTime.utc(0, 0, 0);
   DateTime holidayTime = DateTime.utc(0, 0, 0);
   DateTime notificationTime = DateTime.utc(0, 0, 0);
+  String? strMode = '';
+  String? strFirstSet = '';
   @override
   void initState() {
     super.initState();
+    loadSetting();
   }
 
   @override
@@ -56,8 +61,6 @@ class _SettingScreenState extends State<SettingScreen> {
                   },
                   child: Text(style: const TextStyle(fontSize: 40),DateFormat.Hm().format(everyTime) ),
                 ),
-
-
 
                 Row(mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
@@ -161,4 +164,25 @@ class _SettingScreenState extends State<SettingScreen> {
       }
     });
   }
+  /*------------------------------------------------------------------
+設定画面ロード
+ -------------------------------------------------------------------*/
+  void loadSetting() async {
+    String dbPath = await getDatabasesPath();
+    String path = p.join(dbPath, 'internal_assets.db');
+    Database database = await openDatabase(path, version: 1);
+    List<Map> result = await database.rawQuery("SELECT * From setting  limit 1");
+    for (Map item in result) {
+      setState(() {
+
+        strMode = item['mode'].toString();
+        normalTime = DateTime.parse(item['normalstarttime'].toString());
+        holidayTime = DateTime.parse(item['holidaystarttime'].toString());
+        everyTime = DateTime.parse(item['everystarttime'].toString());
+        notificationTime = DateTime.parse(item['notificationTime'].toString());
+        strFirstSet = item['firstset'].toString();
+      });
+    }
+  }
 }
+

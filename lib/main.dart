@@ -265,7 +265,7 @@ class _MyHomePageState extends State<MyHomePage> {
     String dbPath = await getDatabasesPath();
     String path = p.join(dbPath, 'internal_assets.db');
      Database database = await openDatabase(path, version: 1);
-     List<Map> result = await database.rawQuery("SELECT num,combo_num,due_num,combodue_num,restart From habits  limit 1");
+     List<Map> result = await database.rawQuery("SELECT * From habits  limit 1");
      for (Map item in result) {
        setState(() {
          intNum = item['num'];

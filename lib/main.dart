@@ -43,7 +43,9 @@ Future<void> firstRun() async {
   await openDatabase(path, version: 1,
       onCreate: (Database db, int version) async {
         await db.execute(strCnsSqlCreateRireki);
+        await db.close();
       });
+
 }
 
 //-------------------------------------------------------------
@@ -275,6 +277,8 @@ class _MyHomePageState extends State<MyHomePage> {
          intRestart = item['restart'];
        });
     }
+    database.close();
   }
+
 
 }

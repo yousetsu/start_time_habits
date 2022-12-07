@@ -19,6 +19,7 @@ class _SettingScreenState extends State<SettingScreen> {
   DateTime everyTime = DateTime.utc(0, 0, 0);
   DateTime normalTime = DateTime.utc(0, 0, 0);
   DateTime holidayTime = DateTime.utc(0, 0, 0);
+  String? notification = '';
   DateTime notificationTime = DateTime.utc(0, 0, 0);
   String? strMode = '';
   String? strFirstSet = '';
@@ -179,10 +180,12 @@ class _SettingScreenState extends State<SettingScreen> {
         normalTime = DateTime.parse(item['normalstarttime'].toString());
         holidayTime = DateTime.parse(item['holidaystarttime'].toString());
         everyTime = DateTime.parse(item['everystarttime'].toString());
-        notificationTime = DateTime.parse(item['notificationTime'].toString());
+        notification = item['notification'].toString();
+        notificationTime = DateTime.parse(item['notificationtime'].toString());
         strFirstSet = item['firstset'].toString();
       });
     }
+    database.close();
   }
 }
 

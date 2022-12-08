@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 import 'package:flutter/services.dart';
@@ -51,11 +52,12 @@ Future<void> firstRun() async {
 //-------------------------------------------------------------
 //   main
 //-------------------------------------------------------------
-void main() {
+void main() async{
   //SQLfliteで必要？
   WidgetsFlutterBinding.ensureInitialized();
-  //初回DB登録
-  firstRun();
+
+  await firstRun();
+
   //画面表示
   runApp(const MyApp());
 }

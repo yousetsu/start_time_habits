@@ -13,7 +13,7 @@ const String strCnsNormalDay = "NormarlDay";
 
 
 class _SettingScreenState extends State<SettingScreen> {
-  String? _type = '';
+  String? _type = strCnsNormalDay;
   bool isOn = false;
   bool isEnable = false;
   DateTime everyTime = DateTime.utc(0, 0, 0);
@@ -27,6 +27,9 @@ class _SettingScreenState extends State<SettingScreen> {
   void initState() {
     super.initState();
     loadSetting();
+
+
+
   }
 
   @override
@@ -183,9 +186,12 @@ class _SettingScreenState extends State<SettingScreen> {
         notification = item['notification'].toString();
         notificationTime = DateTime.parse(item['notificationtime'].toString());
         strFirstSet = item['firstset'].toString();
+        _type = (strMode == '0')? strCnsEveryDay : strCnsNormalDay;
       });
     }
     database.close();
+
+
   }
 }
 

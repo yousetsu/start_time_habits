@@ -14,7 +14,7 @@ const String strCnsNormalDay = "NormarlDay";
 
 class _SettingScreenState extends State<SettingScreen> {
   String? _type = strCnsNormalDay;
-  bool isOn = false;
+  bool isOnNotification = false;
   bool isEnable = false;
   DateTime everyTime = DateTime.utc(0, 0, 0);
   DateTime normalTime = DateTime.utc(0, 0, 0);
@@ -109,9 +109,9 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
 
                 const Text('通知設定', style:TextStyle(fontSize: 20.0),),
-                Switch(value: isOn, onChanged: (bool? value) {
+                Switch(value: isOnNotification, onChanged: (bool? value) {
                     if (value != null) {
-                      setState(() {isOn = value;});
+                      setState(() {isOnNotification = value;});
                     }
                   },
                 ),
@@ -187,6 +187,7 @@ class _SettingScreenState extends State<SettingScreen> {
         notificationTime = DateTime.parse(item['notificationtime'].toString());
         strFirstSet = item['firstset'].toString();
         _type = (strMode == '0')? strCnsEveryDay : strCnsNormalDay;
+        isOnNotification = (notification == '0')?  false:true;
       });
     }
     database.close();

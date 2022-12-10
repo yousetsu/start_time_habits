@@ -51,7 +51,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   ],),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(foregroundColor: Colors.white, backgroundColor: Colors.lightBlueAccent, padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 80),),
-                  onPressed: () async {
+                  onPressed: !(_type == strCnsEveryDay)? null : () async {
                     Picker(
                       adapter: DateTimePickerAdapter(type: PickerDateTimeType.kHM, value: everyTime, customColumnType: [3, 4]),
                       title: const Text("Select Time"),
@@ -76,7 +76,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 const Text('　平日', style:TextStyle(fontSize: 20.0),),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(foregroundColor: Colors.white, backgroundColor: Colors.lightBlueAccent, padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 80),),
-                  onPressed: () async {
+                  onPressed:  !(_type == strCnsNormalDay)? null : () async {
                     Picker(
                       adapter: DateTimePickerAdapter(type: PickerDateTimeType.kHM, value: normalTime, customColumnType: [3, 4]),
                       title: const Text("Select Time"),
@@ -93,7 +93,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 const Text('　土日', style:TextStyle(fontSize: 20.0),),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(foregroundColor: Colors.white, backgroundColor: Colors.lightBlueAccent, padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 80),),
-                  onPressed: () async {
+                  onPressed:!(_type == strCnsNormalDay)? null : () async {
                     Picker(
                       adapter: DateTimePickerAdapter(type: PickerDateTimeType.kHM, value: holidayTime, customColumnType: [3, 4]),
                       title: const Text("Select Time"),
@@ -117,7 +117,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(foregroundColor: Colors.white, backgroundColor: Colors.lightBlueAccent, padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 80),),
-                  onPressed: () async {
+                  onPressed: !isOnNotification? null : ()async {
                     Picker(
                       adapter: DateTimePickerAdapter(type: PickerDateTimeType.kHM, value: notificationTime, customColumnType: [3, 4]),
                       title: const Text("Select Time"),

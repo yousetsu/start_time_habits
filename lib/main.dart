@@ -8,7 +8,7 @@ import './achievement.dart';
 import './setting.dart';
 import 'dart:io';
 
-const String strCnsSqlCreateRireki ="CREATE TABLE IF NOT EXISTS rireki(id INTEGER PRIMARY KEY, goaltime TEXT, realtime TEXT, status TEXT, kaku1 INTEGER, kaku2 INTEGER, kaku3 TEXT, kaku4 TEXT)";
+const String strCnsSqlCreateRireki ="CREATE TABLE IF NOT EXISTS rireki(id INTEGER PRIMARY KEY,startdate TEXT, goaltime TEXT, realtime TEXT, status TEXT, kaku1 INTEGER, kaku2 INTEGER, kaku3 TEXT, kaku4 TEXT)";
 //-------------------------------------------------------------
 //   DB
 //-------------------------------------------------------------
@@ -281,6 +281,49 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     database.close();
   }
+  /*------------------------------------------------------------------
+設定情報のロード
+ -------------------------------------------------------------------*/
+  void loadSetting() async {
+    String dbPath = await getDatabasesPath();
+    String path = p.join(dbPath, 'internal_assets.db');
+    Database database = await openDatabase(path, version: 1);
+    List<Map> result = await database.rawQuery("SELECT * From setting  limit 1");
+    for (Map item in result) {
+      setState(() {
+        strMode = item['mode'].toString();
+        normalTime = DateTime.parse(item['normalstarttime'].toString());
+        holidayTime = DateTime.parse(item['holidaystarttime'].toString());
+        everyTime = DateTime.parse(item['everystarttime'].toString());
+      });
+    }
+    database.close();
+  }
+//-------------------------------------------------------------
+//   履歴テーブルにデータ保存
+//-------------------------------------------------------------
+//履歴テーブルにデータ保存
+  void saveRirekiData(String status ,String strGetuptime) async {
+    String dbPath = await getDatabasesPath();
+    String path = p.join(dbPath, 'rireki.db');
+    String strNowDate = DateTime.now().toIso8601String();
+    //ステータス判定
+    String strStatus ="";
 
+    Database database = await openDatabase(path, version: 1,
+        onCreate: (Database db, int version) async {
+          await db.execute(strCnsSqlCreateRireki);
+        });
+    String query =
+        'INSERT INTO rireki(goaltime,realtime, status,kaku1,kaku2,kaku3,kaku4) values("$strNowDate","$strNowDate","$strStatus",null,null,null,null)';
+
+    await database.transaction((txn) async {
+//      int id = await txn.rawInsert(query);
+      await txn.rawInsert(query);
+      //   print("insert: $id");
+    });
+    database.close();
+
+  }
 
 }

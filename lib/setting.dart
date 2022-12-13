@@ -58,7 +58,8 @@ class _SettingScreenState extends State<SettingScreen> {
                       onConfirm: (Picker picker, List value) {
                         setState(() => {
                           everyTime = DateTime.utc(2016, 5, 1, value[0], value[1], 0),
-                        //  _saveStrSetting('goalsleeptime',_goalsleeptime.toString()),
+                        _saveStrSetting('everystarttime',everyTime.toString()),
+                          loadSetting()
                         });
                       },
                     ).showModal(context);
@@ -83,7 +84,8 @@ class _SettingScreenState extends State<SettingScreen> {
                       onConfirm: (Picker picker, List value) {
                         setState(() => {
                           normalTime = DateTime.utc(2016, 5, 1, value[0], value[1], 0),
-                          //  _saveStrSetting('goalsleeptime',_goalsleeptime.toString()),
+                          _saveStrSetting('normalstarttime',normalTime.toString()),
+                          loadSetting()
                         });
                       },
                     ).showModal(context);
@@ -100,7 +102,8 @@ class _SettingScreenState extends State<SettingScreen> {
                       onConfirm: (Picker picker, List value) {
                         setState(() => {
                           holidayTime = DateTime.utc(2016, 5, 1, value[0], value[1], 0),
-                          //  _saveStrSetting('goalsleeptime',_goalsleeptime.toString()),
+                          _saveStrSetting('holidaystarttime',holidayTime.toString()),
+                          loadSetting()
                         });
                       },
                     ).showModal(context);
@@ -111,7 +114,11 @@ class _SettingScreenState extends State<SettingScreen> {
                 const Text('通知設定', style:TextStyle(fontSize: 20.0),),
                 Switch(value: isOnNotification, onChanged: (bool? value) {
                     if (value != null) {
-                      setState(() {isOnNotification = value;});
+                      setState(() {
+                        isOnNotification = value;
+                        _saveStrSetting('notification',  isOnNotification? '1':'0');
+                        loadSetting();
+                      });
                     }
                   },
                 ),
@@ -124,7 +131,8 @@ class _SettingScreenState extends State<SettingScreen> {
                       onConfirm: (Picker picker, List value) {
                         setState(() => {
                           notificationTime = DateTime.utc(2016, 5, 1, value[0], value[1], 0),
-                          //  _saveStrSetting('goalsleeptime',_goalsleeptime.toString()),
+                          _saveStrSetting('notificationtime',notificationTime.toString()),
+                          loadSetting()
                         });
                       },
                     ).showModal(context);
@@ -162,13 +170,21 @@ class _SettingScreenState extends State<SettingScreen> {
     setState(() {
       _type = e;
       if(e == strCnsEveryDay){
-        isEnable = false;
+        isEnable = false; //毎日・・・0
+        _saveStrSetting('mode', '0');
       }else{
-        isEnable = true;
+        isEnable = true; //平日・・・1
+        _saveStrSetting('mode', '1');
       }
     });
+
+    loadSetting();
+
   }
-  /*------------------------------------------------------------------
+//-------------------------------------------------------------
+//   DB処理
+//-------------------------------------------------------------
+/*------------------------------------------------------------------
 設定画面ロード
  -------------------------------------------------------------------*/
   void loadSetting() async {
@@ -191,8 +207,23 @@ class _SettingScreenState extends State<SettingScreen> {
       });
     }
     database.close();
-
-
   }
+//-------------------------------------------------------------
+//   設定テーブルにデータ保存
+//-------------------------------------------------------------
+//設定テーブルにデータ保存
+  void _saveStrSetting(String field ,String value) async {
+    String dbPath = await getDatabasesPath();
+    String path = p.join(dbPath, 'internal_assets.db');
+    Database database = await openDatabase(path, version: 1);
+    String query = "UPDATE setting set $field = '$value' ";
+    await database.transaction((txn) async {
+      //int id = await txn.rawInsert(query);
+      await txn.rawInsert(query);
+      //   print("insert: $id");
+    });
+    database.close();
+  }
+
 }
 

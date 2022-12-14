@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import './habits.dart';
 import './achievement.dart';
 import './setting.dart';
+import './const.dart';
 import 'dart:io';
 
 const String strCnsSqlCreateRireki ="CREATE TABLE IF NOT EXISTS rireki(id INTEGER PRIMARY KEY,startdate TEXT, goaltime TEXT, realtime TEXT, status TEXT, kaku1 INTEGER, kaku2 INTEGER, kaku3 TEXT, kaku4 TEXT)";
@@ -96,6 +97,10 @@ class _MyHomePageState extends State<MyHomePage> {
   int intDueNum = 3;//開始時間守った回数
   int intComboDueNum = 4;//連続で開始時間守った回数
   int intRestart = 5;//習慣再開回数
+  String? strMode = '';
+  DateTime everyTime = DateTime.utc(0, 0, 0);
+  DateTime normalTime = DateTime.utc(0, 0, 0);
+  DateTime holidayTime = DateTime.utc(0, 0, 0);
   @override
   void initState() {
     super.initState();
@@ -309,13 +314,25 @@ class _MyHomePageState extends State<MyHomePage> {
     String strNowDate = DateTime.now().toIso8601String();
     //ステータス判定
     String strStatus ="";
+    //目標時間セット
+    String strGoalTime ="";
+
+    if (strMode == cnsModeEveryDay){
+      strGoalTime = everyTime.toIso8601String();
+    }else{
+      //平日の場合
+      strGoalTime = normalTime.toIso8601String();
+     //土日の場合
+      strGoalTime = holidayTime.toIso8601String();
+    }
+
 
     Database database = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
           await db.execute(strCnsSqlCreateRireki);
         });
     String query =
-        'INSERT INTO rireki(goaltime,realtime, status,kaku1,kaku2,kaku3,kaku4) values("$strNowDate","$strNowDate","$strStatus",null,null,null,null)';
+        'INSERT INTO rireki(goaltime,realtime, status,kaku1,kaku2,kaku3,kaku4) values("$strGoalTime","$strNowDate","$strStatus",null,null,null,null)';
 
     await database.transaction((txn) async {
 //      int id = await txn.rawInsert(query);

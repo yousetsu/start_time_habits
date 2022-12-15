@@ -9,7 +9,7 @@ import './setting.dart';
 import './const.dart';
 import 'dart:io';
 
-const String strCnsSqlCreateRireki ="CREATE TABLE IF NOT EXISTS rireki(id INTEGER PRIMARY KEY,startdate TEXT, goaltime TEXT, realtime TEXT, status TEXT, kaku1 INTEGER, kaku2 INTEGER, kaku3 TEXT, kaku4 TEXT)";
+const String strCnsSqlCreateRireki ="CREATE TABLE IF NOT EXISTS rireki(id INTEGER PRIMARY KEY, goaltime TEXT, realtime TEXT, status TEXT, kaku1 INTEGER, kaku2 INTEGER, kaku3 TEXT, kaku4 TEXT)";
 //-------------------------------------------------------------
 //   DB
 //-------------------------------------------------------------
@@ -320,13 +320,15 @@ class _MyHomePageState extends State<MyHomePage> {
     if (strMode == cnsModeEveryDay){
       strGoalTime = everyTime.toIso8601String();
     }else{
+      //土日の場合
+      if (DateTime.now().weekday == 6 || DateTime.now().weekday == 7) {
+        strGoalTime = holidayTime.toIso8601String();
+      }
       //平日の場合
-      strGoalTime = normalTime.toIso8601String();
-     //土日の場合
-      strGoalTime = holidayTime.toIso8601String();
+      else {
+        strGoalTime = normalTime.toIso8601String();
+      }
     }
-
-
     Database database = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
           await db.execute(strCnsSqlCreateRireki);
@@ -340,7 +342,5 @@ class _MyHomePageState extends State<MyHomePage> {
       //   print("insert: $id");
     });
     database.close();
-
   }
-
 }

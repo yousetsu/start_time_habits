@@ -47,9 +47,7 @@ Future<void> firstRun() async {
         await db.execute(strCnsSqlCreateRireki);
         await db.close();
       });
-
 }
-
 //-------------------------------------------------------------
 //   main
 //-------------------------------------------------------------
@@ -312,11 +310,15 @@ class _MyHomePageState extends State<MyHomePage> {
     String dbPath = await getDatabasesPath();
     String path = p.join(dbPath, 'rireki.db');
     String strNowDate = DateTime.now().toIso8601String();
-    //ステータス判定
-    String strStatus ="";
+    //ステータス
+    String strStatus =cnsStatusHabits; //習慣を実行
     //目標時間セット
     String strGoalTime ="";
 
+
+
+
+    //毎日
     if (strMode == cnsModeEveryDay){
       strGoalTime = everyTime.toIso8601String();
     }else{
@@ -329,6 +331,13 @@ class _MyHomePageState extends State<MyHomePage> {
         strGoalTime = normalTime.toIso8601String();
       }
     }
+
+    //ステータス判定
+    if(strGoalTime <= strNowDate) {
+      strStatus = cnsStatusHabitsDue; //習慣を期限内に実行
+    }
+
+
     Database database = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
           await db.execute(strCnsSqlCreateRireki);

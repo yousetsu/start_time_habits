@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'dart:async';
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
@@ -103,6 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     loadPref();
+    loadSetting();
   }
   @override
   Widget build(BuildContext context) {
@@ -244,8 +246,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       switch (value) {
         case 'Yes':
-
-
+          saveRirekiData();
 
 
           //アチーブメントがあれば表示
@@ -306,37 +307,45 @@ class _MyHomePageState extends State<MyHomePage> {
 //   履歴テーブルにデータ保存
 //-------------------------------------------------------------
 //履歴テーブルにデータ保存
-  void saveRirekiData(String status ,String strGetuptime) async {
+  void saveRirekiData() async {
     String dbPath = await getDatabasesPath();
     String path = p.join(dbPath, 'rireki.db');
-    String strNowDate = DateTime.now().toIso8601String();
+
+    //時刻の部分だけセット
+ //   String strNowDateTime =  as String;
+
+    String strNowDate = DateTime.now().toString();
+
+    String strGoalTime;
+    //比較用の変数
+    DateTime dtNowDate = DateTime.utc(0,0,0,DateTime.now().hour,DateTime.now().minute,0);
+    DateTime dtGoalTime;
+
     //ステータス
     String strStatus =cnsStatusHabits; //習慣を実行
-    //目標時間セット
-    String strGoalTime ="";
-
-
-
 
     //毎日
     if (strMode == cnsModeEveryDay){
-      strGoalTime = everyTime.toIso8601String();
+      strGoalTime = everyTime.toString();
     }else{
       //土日の場合
       if (DateTime.now().weekday == 6 || DateTime.now().weekday == 7) {
-        strGoalTime = holidayTime.toIso8601String();
+        strGoalTime = holidayTime.toString();
       }
       //平日の場合
       else {
-        strGoalTime = normalTime.toIso8601String();
+        strGoalTime = normalTime.toString();
       }
     }
+    //比較用
+    dtGoalTime = DateTime.parse(strGoalTime.toString());
 
     //ステータス判定
-    if(strGoalTime <= strNowDate) {
+    //現在時刻が、目標時間以内だったら期限内実成功
+    // 目標時間　>　現在時間
+    if(dtGoalTime.isAfter(dtNowDate)) {
       strStatus = cnsStatusHabitsDue; //習慣を期限内に実行
     }
-
 
     Database database = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {

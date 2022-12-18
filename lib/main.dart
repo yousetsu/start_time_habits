@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'dart:async';
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
@@ -246,8 +245,10 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       switch (value) {
         case 'Yes':
-          saveRirekiData();
+          //履歴・習慣状況テーブルに更新
+          saveRirekiHabitsData();
 
+          //アチーブメント判定
 
           //アチーブメントがあれば表示
           // showDialog(context: context,
@@ -303,27 +304,56 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     database.close();
   }
-//-------------------------------------------------------------
-//   履歴テーブルにデータ保存
-//-------------------------------------------------------------
-//履歴テーブルにデータ保存
-  void saveRirekiData() async {
+  /*------------------------------------------------------------------
+直前の履歴データロード
+ -------------------------------------------------------------------*/
+  Future<String?> _loadStrRireki(String field) async{
+    String? strValue = "";
     String dbPath = await getDatabasesPath();
     String path = p.join(dbPath, 'rireki.db');
+    Database database = await openDatabase(path, version: 1);
+    List<Map> result = await database.rawQuery("SELECT $field From (SELECT $field From rireki order by realtime desc ) limit 1");
+    for (Map item in result) {
+      strValue = item[field].toString();
+    }
+    database.close();
+    return strValue;
 
-    //時刻の部分だけセット
- //   String strNowDateTime =  as String;
+  }
 
+//-------------------------------------------------------------
+//   データベースにデータ保存
+//-------------------------------------------------------------
+
+  void saveRirekiHabitsData() async {
     String strNowDate = DateTime.now().toString();
-
     String strGoalTime;
     //比較用の変数
     DateTime dtNowDate = DateTime.utc(0,0,0,DateTime.now().hour,DateTime.now().minute,0);
     DateTime dtGoalTime;
 
     //ステータス
-    String strStatus =cnsStatusHabits; //習慣を実行
+    String strStatus = cnsStatusHabits; //習慣を実行
 
+    //履歴テーブルからデータ取得
+    String dbPath = await getDatabasesPath();
+
+
+    //前回の時刻
+    String? strPreRealTime;
+    //前回のステータス
+    String? strPreStatus;
+
+    //履歴テーブルから直前の時刻を取得
+    strPreRealTime = await _loadStrRireki('realtime') ;
+
+    //履歴テーブルから直前のステータスを取得
+    strPreStatus = await _loadStrRireki('status') ;
+
+    //習慣状況テーブルにデータ保存
+    String habitsPath = p.join(dbPath, 'internal_assets.db');
+
+    //期限を守れているか判定
     //毎日
     if (strMode == cnsModeEveryDay){
       strGoalTime = everyTime.toString();
@@ -347,18 +377,65 @@ class _MyHomePageState extends State<MyHomePage> {
       strStatus = cnsStatusHabitsDue; //習慣を期限内に実行
     }
 
-    Database database = await openDatabase(path, version: 1,
+    //実行回数をカウントアップ
+    setState(() {intNum++;});
+
+    //直前の日時が1日前だったら、連続実行回数をカウントアップ
+    DateTime dtPreRealTime =  DateTime.parse(strPreRealTime.toString());
+    DateTime dtNowDateYest = dtNowDate.add(const Duration(days: -1));
+
+    if(dtPreRealTime.isAtSameMomentAs(dtNowDateYest)){
+      setState(() {intComboNum++;});
+    }
+
+    //期限を守っていればカウントアップ
+    if(strStatus == cnsStatusHabitsDue){
+      setState(() {intDueNum++;});
+    }
+
+    //昨日のデータが存在しかつ、前回今回共に　習慣を守っていればカウントアップ
+    if(dtPreRealTime.isAtSameMomentAs(dtNowDateYest)) {
+      if(strPreStatus == cnsStatusHabitsDue && strStatus == cnsStatusHabitsDue){
+        setState(() {intComboDueNum++;});
+      }
+    }
+
+    //前回の実績がなかったらカウントアップ
+    if(dtPreRealTime.isAtSameMomentAs(dtNowDateYest) == false ){
+      setState(() {intRestart++;});
+    }
+    //習慣テーブルにアップデート
+    String strHapitsPath = p.join(dbPath, 'internal_assets.db');
+    Database database = await openDatabase(strHapitsPath, version: 1,
         onCreate: (Database db, int version) async {
           await db.execute(strCnsSqlCreateRireki);
         });
     String query =
-        'INSERT INTO rireki(goaltime,realtime, status,kaku1,kaku2,kaku3,kaku4) values("$strGoalTime","$strNowDate","$strStatus",null,null,null,null)';
-
+        'Update habits set num = $intNum,combo_num = $intComboNum ,due_num = $intDueNum,combodue_num = $intComboDueNum ,restart = $intRestart';
     await database.transaction((txn) async {
 //      int id = await txn.rawInsert(query);
       await txn.rawInsert(query);
       //   print("insert: $id");
     });
     database.close();
+
+    //履歴テーブルに登録
+    String path = p.join(dbPath, 'rireki.db');
+     database = await openDatabase(path, version: 1,
+        onCreate: (Database db, int version) async {
+          await db.execute(strCnsSqlCreateRireki);
+        });
+     query =
+        'INSERT INTO rireki(goaltime,realtime, status,kaku1,kaku2,kaku3,kaku4) values("$strGoalTime","$strNowDate","$strStatus",null,null,null,null)';
+    await database.transaction((txn) async {
+//      int id = await txn.rawInsert(query);
+      await txn.rawInsert(query);
+      //   print("insert: $id");
+    });
+    database.close();
+
+    //アチーブメント判定
+
+
   }
 }

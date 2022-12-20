@@ -22,9 +22,70 @@ class _HabitsScreenState extends State<HabitsScreen> {
         border: Border.all(color: Colors.blue, width: 2.0)),
     child: new Icon(Icons.person, color: Colors.amber,),
   );
-
+  EventList<Event> _markedDateMap = new EventList<Event>(
+    events: {
+      new DateTime(2019, 2, 10): [
+        new Event(
+          date: new DateTime(2019, 2, 10),
+          title: 'Event 1',
+          icon: _eventIcon,
+          dot: Container(
+            margin: EdgeInsets.symmetric(horizontal: 1.0),
+            color: Colors.red,
+            height: 5.0,
+            width: 5.0,
+          ),
+        ),
+        new Event(
+          date: new DateTime(2019, 2, 10),
+          title: 'Event 2',
+          icon: _eventIcon,
+        ),
+        new Event(
+          date: new DateTime(2019, 2, 10),
+          title: 'Event 3',
+          icon: _eventIcon,
+        ),
+      ],
+    },
+  );
   @override
   void initState() {
+
+    /// Add more events to _markedDateMap EventList
+    _markedDateMap.add(
+        new DateTime(2019, 2, 25),
+        new Event(
+          date: new DateTime(2019, 2, 25),
+          title: 'Event 5',
+          icon: _eventIcon,
+        ));
+
+    _markedDateMap.add(
+        new DateTime(2019, 2, 10),
+        new Event(
+          date: new DateTime(2019, 2, 10),
+          title: 'Event 4',
+          icon: _eventIcon,
+        ));
+
+    _markedDateMap.addAll(new DateTime(2019, 2, 11), [
+      new Event(
+        date: new DateTime(2019, 2, 11),
+        title: 'Event 1',
+        icon: _eventIcon,
+      ),
+      new Event(
+        date: new DateTime(2019, 2, 11),
+        title: 'Event 2',
+        icon: _eventIcon,
+      ),
+      new Event(
+        date: new DateTime(2019, 2, 11),
+        title: 'Event 3',
+        icon: _eventIcon,
+      ),
+    ]);
     super.initState();
   }
 

@@ -27,42 +27,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('習慣状況')),
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              // Container(
-              //   margin: EdgeInsets.only(top: 30.0, bottom: 16.0, left: 16.0, right: 16.0,),
-              //   child: new Row(
-              //     children: <Widget>[
-              //       Expanded(
-              //           child: Text(_currentMonth, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0,),)),
-              //       TextButton(
-              //         child: Text('PREV'),
-              //         onPressed: () {
-              //           setState(() {
-              //             _targetDateTime = DateTime(
-              //                 _targetDateTime.year, _targetDateTime.month - 1);
-              //             _currentMonth =
-              //                 DateFormat.yMMM().format(_targetDateTime);
-              //           });
-              //         },
-              //       ),
-              //       TextButton(
-              //         child: Text('NEXT'),
-              //         onPressed: () {
-              //           setState(() {
-              //             _targetDateTime = DateTime(
-              //                 _targetDateTime.year, _targetDateTime.month + 1);
-              //             _currentMonth =
-              //                 DateFormat.yMMM().format(_targetDateTime);
-              //           });
-              //         },
-              //       )
-              //     ],
-              //   ),
-              // ),
+        body:
               Container(
                 margin: const EdgeInsets.only(top:20, left:20),
                 child: CalendarCarousel<Event>(
@@ -74,9 +39,6 @@ class _HabitsScreenState extends State<HabitsScreen> {
                   markedDateIconBuilder: (event)=>event.icon,  //アイコン
                 ),
               ), //
-            ],
-          ),
-        ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 1,
         items: const <BottomNavigationBarItem>[

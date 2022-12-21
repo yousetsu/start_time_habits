@@ -11,87 +11,19 @@ class HabitsScreen extends StatefulWidget {
 
 class _HabitsScreenState extends State<HabitsScreen> {
 
-  DateTime _currentDate = DateTime(2019, 2, 3);
-  DateTime _currentDate2 = DateTime(2019, 2, 3);
   String _currentMonth = DateFormat.yMMM().format(DateTime(2019, 2, 3));
   DateTime _targetDateTime = DateTime(2019, 2, 3);
-  static Widget _eventIcon = new Container(
-    decoration: new BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(1000)),
-        border: Border.all(color: Colors.blue, width: 2.0)),
-    child: new Icon(Icons.person, color: Colors.amber,),
-  );
-  EventList<Event> _markedDateMap = new EventList<Event>(
-    events: {
-      new DateTime(2019, 2, 10): [
-        new Event(
-          date: new DateTime(2019, 2, 10),
-          title: 'Event 1',
-          icon: _eventIcon,
-          dot: Container(
-            margin: EdgeInsets.symmetric(horizontal: 1.0),
-            color: Colors.red,
-            height: 5.0,
-            width: 5.0,
-          ),
-        ),
-        new Event(
-          date: new DateTime(2019, 2, 10),
-          title: 'Event 2',
-          icon: _eventIcon,
-        ),
-        new Event(
-          date: new DateTime(2019, 2, 10),
-          title: 'Event 3',
-          icon: _eventIcon,
-        ),
-      ],
-    },
-  );
+
   @override
   void initState() {
 
-    /// Add more events to _markedDateMap EventList
-    _markedDateMap.add(
-        new DateTime(2019, 2, 25),
-        new Event(
-          date: new DateTime(2019, 2, 25),
-          title: 'Event 5',
-          icon: _eventIcon,
-        ));
-
-    _markedDateMap.add(
-        new DateTime(2019, 2, 10),
-        new Event(
-          date: new DateTime(2019, 2, 10),
-          title: 'Event 4',
-          icon: _eventIcon,
-        ));
-
-    _markedDateMap.addAll(new DateTime(2019, 2, 11), [
-      new Event(
-        date: new DateTime(2019, 2, 11),
-        title: 'Event 1',
-        icon: _eventIcon,
-      ),
-      new Event(
-        date: new DateTime(2019, 2, 11),
-        title: 'Event 2',
-        icon: _eventIcon,
-      ),
-      new Event(
-        date: new DateTime(2019, 2, 11),
-        title: 'Event 3',
-        icon: _eventIcon,
-      ),
-    ]);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
 
+    List<DateTime> _days=[DateTime(2020, 12, 20), DateTime(2020, 12, 21)]; //アイコンを表示する日
 
     return Scaffold(
       appBar: AppBar(title: const Text('習慣状況')),
@@ -100,40 +32,47 @@ class _HabitsScreenState extends State<HabitsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
+              // Container(
+              //   margin: EdgeInsets.only(top: 30.0, bottom: 16.0, left: 16.0, right: 16.0,),
+              //   child: new Row(
+              //     children: <Widget>[
+              //       Expanded(
+              //           child: Text(_currentMonth, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0,),)),
+              //       TextButton(
+              //         child: Text('PREV'),
+              //         onPressed: () {
+              //           setState(() {
+              //             _targetDateTime = DateTime(
+              //                 _targetDateTime.year, _targetDateTime.month - 1);
+              //             _currentMonth =
+              //                 DateFormat.yMMM().format(_targetDateTime);
+              //           });
+              //         },
+              //       ),
+              //       TextButton(
+              //         child: Text('NEXT'),
+              //         onPressed: () {
+              //           setState(() {
+              //             _targetDateTime = DateTime(
+              //                 _targetDateTime.year, _targetDateTime.month + 1);
+              //             _currentMonth =
+              //                 DateFormat.yMMM().format(_targetDateTime);
+              //           });
+              //         },
+              //       )
+              //     ],
+              //   ),
+              // ),
               Container(
-                margin: EdgeInsets.only(top: 30.0, bottom: 16.0, left: 16.0, right: 16.0,),
-                child: new Row(
-                  children: <Widget>[
-                    Expanded(
-                        child: Text(_currentMonth, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0,),)),
-                    TextButton(
-                      child: Text('PREV'),
-                      onPressed: () {
-                        setState(() {
-                          _targetDateTime = DateTime(
-                              _targetDateTime.year, _targetDateTime.month - 1);
-                          _currentMonth =
-                              DateFormat.yMMM().format(_targetDateTime);
-                        });
-                      },
-                    ),
-                    TextButton(
-                      child: Text('NEXT'),
-                      onPressed: () {
-                        setState(() {
-                          _targetDateTime = DateTime(
-                              _targetDateTime.year, _targetDateTime.month + 1);
-                          _currentMonth =
-                              DateFormat.yMMM().format(_targetDateTime);
-                        });
-                      },
-                    )
-                  ],
+                margin: const EdgeInsets.only(top:20, left:20),
+                child: CalendarCarousel<Event>(
+                  //アイコンを表示する日付について、EventのList
+                  markedDatesMap: _getMarkedDateMap(_days, context),
+                  markedDateShowIcon: true,
+                  markedDateIconMaxShown: 1,
+                  markedDateMoreShowTotal: null,
+                  markedDateIconBuilder: (event)=>event.icon,  //アイコン
                 ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 16.0),
-                child: _calendarCarouselNoHeader,
               ), //
             ],
           ),
@@ -158,48 +97,49 @@ class _HabitsScreenState extends State<HabitsScreen> {
       ),
     );
   }
-  final _calendarCarouselNoHeader = CalendarCarousel<Event>(
-    todayBorderColor: Colors.green,
-    // onDayPressed: (date, events) {
-    //   this.setState(() => _currentDate2 = date);
-    //   events.forEach((event) => print(event.title));
-    // },
-    daysHaveCircularBorder: true,
-    showOnlyCurrentMonthDate: false,
-    weekendTextStyle: TextStyle(color: Colors.red,),
-    thisMonthDayBorderColor: Colors.grey,
-    weekFormat: false,
-      firstDayOfWeek: 4,
-   markedDatesMap: _markedDateMap,
-    height: 420.0,
-   // selectedDateTime: _currentDate2,
- //   targetDateTime: _targetDateTime,
-    customGridViewPhysics: NeverScrollableScrollPhysics(),
-    // markedDateCustomShapeBorder:
-    // CircleBorder(side: BorderSide(color: Colors.yellow)),
-    // markedDateCustomTextStyle: TextStyle(
-    //   fontSize: 18,
-    //   color: Colors.blue,
-    // ),
-    showHeader: false,
-    todayTextStyle: TextStyle(color: Colors.blue,),
-    todayButtonColor: Colors.yellow,
-    selectedDayTextStyle: TextStyle(color: Colors.yellow,),
-  //  minSelectedDate: _currentDate.subtract(Duration(days: 360)),
-  //  maxSelectedDate: _currentDate.add(Duration(days: 360)),
-    prevDaysTextStyle: TextStyle(fontSize: 16, color: Colors.pinkAccent,),
-    inactiveDaysTextStyle: TextStyle(
-      color: Colors.tealAccent,
-      fontSize: 16,
-    ),
-    // onCalendarChanged: (DateTime date) {
-    //   this.setState(() {
-    //     _targetDateTime = date;
-    //     _currentMonth = DateFormat.yMMM().format(_targetDateTime);
-    //   });
-    // },
-    onDayLongPressed: (DateTime date) {
-      print('long pressed date $date');
-    },
-  );
+  EventList<Event> _getMarkedDateMap(List<DateTime> days, BuildContext context){
+    EventList<Event> _markedDateMap=new EventList<Event>(events: {});
+    for (DateTime _date in days){
+      _markedDateMap.add(_date,
+          new Event(
+            date: _date,
+            icon: _getIcon(_date), //アイコンを作成
+          ));
+    }
+    return _markedDateMap;
+  }
+  Widget _getIcon(DateTime date){
+
+    bool _isToday=isSameDay(date, DateTime.now());//今日？
+    CalendarCarousel _calendar_default=CalendarCarousel();
+    Color _today_col=_calendar_default.todayButtonColor;  //今日の背景色
+
+    return Container(
+        decoration: new BoxDecoration(
+          color: _isToday ? _today_col :Theme.of(context).scaffoldBackgroundColor, borderRadius: BorderRadius.circular(1000),
+        ), //今日の場合は赤の円の背景　それ以外は無し
+    child: Column(
+        children: [
+          Text(date.day.toString(),
+            style: TextStyle(
+                color: _isToday? Colors.white: getDayCol(date), fontWeight: FontWeight.w400
+            ),//日付の文字　今日は白、それ以外は平日黒、休日赤
+         ),
+         SizedBox(height: 2,),
+    Icon(Icons.brightness_1, color: Colors.blue, size: 16,), //日付と一緒に表示するアイコン
+     ]
+    ));
+  }
+  static bool isSameDay(DateTime day1, DateTime day2) {
+    return ((day1.difference(day2).inDays) == 0 && (day1.day == day2.day));
+  }
+  Color getDayCol(DateTime _date){
+    switch(_date.weekday){
+      case DateTime.saturday:
+      case DateTime.sunday:
+        return Colors.red;
+      default:
+        return Colors.black;
+    }
+  }
 }

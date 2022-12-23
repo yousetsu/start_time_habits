@@ -27,9 +27,6 @@ class _SettingScreenState extends State<SettingScreen> {
   void initState() {
     super.initState();
     loadSetting();
-
-
-
   }
 
   @override

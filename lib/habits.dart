@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
-import 'package:intl/intl.dart';
+import 'package:path/path.dart' as p;
+import 'package:sqflite/sqflite.dart';
+import './const.dart';
+
+List<Map> mapRireki = <Map>[];
 
 class HabitsScreen extends StatefulWidget {
   const HabitsScreen({Key? key}) : super(key: key); //コンストラクタ
@@ -10,21 +14,13 @@ class HabitsScreen extends StatefulWidget {
 }
 
 class _HabitsScreenState extends State<HabitsScreen> {
-
-  String _currentMonth = DateFormat.yMMM().format(DateTime(2019, 2, 3));
-  DateTime _targetDateTime = DateTime(2019, 2, 3);
-
   @override
-  void initState() {
-
+  void initState()  {
     super.initState();
+    _loadRireki();
   }
-
   @override
   Widget build(BuildContext context) {
-
-    List<DateTime> _days=[DateTime(2020, 12, 20), DateTime(2020, 12, 21)]; //アイコンを表示する日
-
     return Scaffold(
       appBar: AppBar(title: const Text('習慣状況')),
         body:
@@ -32,7 +28,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
                 margin: const EdgeInsets.only(top:20, left:20),
                 child: CalendarCarousel<Event>(
                   //アイコンを表示する日付について、EventのList
-                  markedDatesMap: _getMarkedDateMap(_days, context),
+                  markedDatesMap: _getMarkedDateMap(context),
                   markedDateShowIcon: true,
                   markedDateIconMaxShown: 1,
                   markedDateMoreShowTotal: null,
@@ -59,18 +55,24 @@ class _HabitsScreenState extends State<HabitsScreen> {
       ),
     );
   }
-  EventList<Event> _getMarkedDateMap(List<DateTime> days, BuildContext context){
+  EventList<Event> _getMarkedDateMap(BuildContext context){
     EventList<Event> _markedDateMap=new EventList<Event>(events: {});
-    for (DateTime _date in days){
-      _markedDateMap.add(_date,
-          new Event(
-            date: _date,
-            icon: _getIcon(_date), //アイコンを作成
-          ));
+    DateTime dateTime= DateTime(0, 0, 0);
+    String strStatus ;
+    for (Map item in mapRireki){
+      dateTime = DateTime( DateTime.parse(item['realtime'].toString()).year,DateTime.parse(item['realtime'].toString()).month,DateTime.parse(item['realtime'].toString()).day);
+      strStatus = item['status'].toString();
+      _markedDateMap.add(dateTime,new Event(date: dateTime, icon: _getIcon(dateTime,strStatus))); //アイコンを作成
     }
+    // dateTime = DateTime(2022, 12, 10);
+    // _markedDateMap.add(dateTime,new Event(date: dateTime, icon: _getIcon(dateTime,'0')));
+    // dateTime = DateTime(2022, 12, 11);
+    // _markedDateMap.add(dateTime,new Event(date: dateTime, icon: _getIcon(dateTime,'1')));
+    // dateTime = DateTime(2022, 12, 23);
+    // _markedDateMap.add(dateTime,new Event(date: dateTime, icon: _getIcon(dateTime,'1')));
     return _markedDateMap;
   }
-  Widget _getIcon(DateTime date){
+  Widget _getIcon(DateTime date , String status){
 
     bool _isToday=isSameDay(date, DateTime.now());//今日？
     CalendarCarousel _calendar_default=CalendarCarousel();
@@ -87,8 +89,8 @@ class _HabitsScreenState extends State<HabitsScreen> {
                 color: _isToday? Colors.white: getDayCol(date), fontWeight: FontWeight.w400
             ),//日付の文字　今日は白、それ以外は平日黒、休日赤
          ),
-         SizedBox(height: 2,),
-    Icon(Icons.brightness_1, color: Colors.blue, size: 16,), //日付と一緒に表示するアイコン
+         //期限内に開始できたらダイアモンド、そのひ開始できたらサムズアップ
+         SizedBox(height: 2,), Icon(status == cnsStatusHabitsDue ? Icons.diamond:Icons.thumb_up  , color: Colors.white, size: 16,), //日付と一緒に表示するアイコン
      ]
     ));
   }
@@ -103,5 +105,17 @@ class _HabitsScreenState extends State<HabitsScreen> {
       default:
         return Colors.black;
     }
+  }
+  /*------------------------------------------------------------------
+履歴データロード
+ -------------------------------------------------------------------*/
+  Future<String?> _loadRireki() async{
+
+    String dbPath = await getDatabasesPath();
+    String path =  p.join(dbPath, 'rireki.db');
+    Database database = await openDatabase(path, version: 1);
+    mapRireki = await database.rawQuery("SELECT * From rireki order by realtime desc");
+    await database.close();
+
   }
 }

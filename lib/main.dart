@@ -284,7 +284,7 @@ class _MyHomePageState extends State<MyHomePage> {
          intRestart = item['restart'];
        });
     }
-    database.close();
+    await database.close();
   }
   /*------------------------------------------------------------------
 設定情報のロード
@@ -302,7 +302,7 @@ class _MyHomePageState extends State<MyHomePage> {
         everyTime = DateTime.parse(item['everystarttime'].toString());
       });
     }
-    database.close();
+    await database.close();
   }
   /*------------------------------------------------------------------
 直前の履歴データロード
@@ -316,7 +316,7 @@ class _MyHomePageState extends State<MyHomePage> {
     for (Map item in result) {
       strValue = item[field].toString();
     }
-    database.close();
+    await database.close();
     return strValue;
 
   }
@@ -432,7 +432,7 @@ class _MyHomePageState extends State<MyHomePage> {
       await txn.rawInsert(query);
       //   print("insert: $id");
     });
-    database.close();
+    await database.close();
 
     //アチーブメント判定
 

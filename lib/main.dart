@@ -432,8 +432,74 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     await database.close();
 
+   //アチーブメントユーザーマスタから達成状況をロード
+
+
+
+
     //アチーブメント判定
+    String strTitle ='';
+    String strContent = '';
+    String strID = '';
+    bool boolAchievementFlg = false;
+    for (Map item in achievementMapList)
+    {
+      //既にアチーブメント達成してたら除外
 
+      //アチーブメント判定
+      if(item['num'] != 0 && item['num'] <= intNum){
+        boolAchievementFlg = true;
+        strID    = item['id'];
+        strTitle = item['title'];
+        strContent ='$strTitle \n\n <達成条件>\n 習慣実行回数　${item['num']}回以上\n ';
+      }
+      if(item['combo_num'] != 0 && item['combo_num'] <= intComboNum){
+        boolAchievementFlg = true;
+        strID    = item['id'];
+        strTitle = item['title'];
+        strContent ='$strTitle \n\n <達成条件>\n 習慣連続実行回数　${item['combo_num']}回以上\n ';
 
+      }
+      if(item['due_num'] != 0 && item['due_num'] <= intDueNum){
+        boolAchievementFlg = true;
+        strID    = item['id'];
+        strTitle = item['title'];
+        strContent ='$strTitle \n\n <達成条件>\n 目標時間内に実行した回数　${item['due_num']}回以上\n ';
+      }
+      if(item['combodue_num'] != 0 && item['combodue_num'] <= intComboDueNum){
+        boolAchievementFlg = true;
+        strID    = item['id'];
+        strTitle = item['title'];
+        strContent ='$strTitle \n\n <達成条件>\n 目標時間内に実行した連続回数　${item['combodue_num']}回以上\n ';
+      }
+    }
+    //アチーブメントダイアログ表示（共通）
+    if(boolAchievementFlg){
+      showDialog(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title:  Text('称号獲得！'),
+            content: Text(strContent),
+            actions: <Widget>[
+              TextButton(
+                  child: Text('閉じる'),
+                  onPressed: () => Navigator.pop<String>(context, 'Yes')),
+            ],
+          ));
+
+    //アチーブメントユーザーマスタに登録
+    path = p.join(dbPath, 'achievement.db');
+    database = await openDatabase(path, version: 1,
+        onCreate: (Database db, int version) async {
+          await db.execute(strCnsSqlCreateAchievement);
+        });
+    query = 'INSERT INTO achievement_user(id,kaku1,kaku2,kaku3,kaku4) values("$strID",null,null,null,null)';
+    await database.transaction((txn) async {
+//      int id = await txn.rawInsert(query);
+      await txn.rawInsert(query);
+      //   print("insert: $id");
+    });
+    await database.close();
+    }
   }
 }

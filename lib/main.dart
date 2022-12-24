@@ -336,7 +336,6 @@ class _MyHomePageState extends State<MyHomePage> {
     //履歴テーブルからデータ取得
     String dbPath = await getDatabasesPath();
 
-
     //前回の時刻
     String? strPreRealTime;
     //前回のステータス
@@ -433,42 +432,58 @@ class _MyHomePageState extends State<MyHomePage> {
     await database.close();
 
    //アチーブメントユーザーマスタから達成状況をロード
-
-
-
+    List<Map> achievementUserMap = await  _loadAchievementUser();
 
     //アチーブメント判定
     String strTitle ='';
     String strContent = '';
-    String strID = '';
+    String strNo = '';
     bool boolAchievementFlg = false;
+    bool boolAlreadyAchieveFlg = false;
+
     for (Map item in achievementMapList)
     {
+      boolAlreadyAchieveFlg = false;
+      boolAchievementFlg = false;
+
       //既にアチーブメント達成してたら除外
+      for (Map serchAchMap in achievementUserMap){
+       if( item['No'] == serchAchMap['No']){
+         boolAlreadyAchieveFlg = true;
+       }
+      }
+      if(boolAlreadyAchieveFlg){
+        //既に称号を獲得していたら次へ
+        continue;
+      }
+      // Map<dynamic, dynamic> find = achievementUserMap.firstWhere((No) => item['No'] == 0);
+      // if (find.isNotEmpty){
+      //   continue;
+      // }
 
       //アチーブメント判定
       if(item['num'] != 0 && item['num'] <= intNum){
         boolAchievementFlg = true;
-        strID    = item['id'];
+        strNo    = item['No'];
         strTitle = item['title'];
         strContent ='$strTitle \n\n <達成条件>\n 習慣実行回数　${item['num']}回以上\n ';
       }
       if(item['combo_num'] != 0 && item['combo_num'] <= intComboNum){
         boolAchievementFlg = true;
-        strID    = item['id'];
+        strNo    = item['No'];
         strTitle = item['title'];
         strContent ='$strTitle \n\n <達成条件>\n 習慣連続実行回数　${item['combo_num']}回以上\n ';
 
       }
       if(item['due_num'] != 0 && item['due_num'] <= intDueNum){
         boolAchievementFlg = true;
-        strID    = item['id'];
+        strNo    = item['No'];
         strTitle = item['title'];
         strContent ='$strTitle \n\n <達成条件>\n 目標時間内に実行した回数　${item['due_num']}回以上\n ';
       }
       if(item['combodue_num'] != 0 && item['combodue_num'] <= intComboDueNum){
         boolAchievementFlg = true;
-        strID    = item['id'];
+        strNo    = item['No'];
         strTitle = item['title'];
         strContent ='$strTitle \n\n <達成条件>\n 目標時間内に実行した連続回数　${item['combodue_num']}回以上\n ';
       }
@@ -493,7 +508,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onCreate: (Database db, int version) async {
           await db.execute(strCnsSqlCreateAchievement);
         });
-    query = 'INSERT INTO achievement_user(id,kaku1,kaku2,kaku3,kaku4) values("$strID",null,null,null,null)';
+    query = 'INSERT INTO achievement_user(No,kaku1,kaku2,kaku3,kaku4) values("$strNo",null,null,null,null)';
     await database.transaction((txn) async {
 //      int id = await txn.rawInsert(query);
       await txn.rawInsert(query);
@@ -501,5 +516,17 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     await database.close();
     }
+  }
+  /*------------------------------------------------------------------
+アチーブメントユーザーマスタロード
+ -------------------------------------------------------------------*/
+  Future<List<Map>> _loadAchievementUser() async{
+    String dbPath = await getDatabasesPath();
+    String path = p.join(dbPath, 'achievement.db');
+    Database database = await openDatabase(path, version: 1);
+    List<Map> result = await database.rawQuery("SELECT * from achievement_user ");
+    await database.close();
+    return result;
+
   }
 }

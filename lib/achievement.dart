@@ -8,7 +8,7 @@ class AchievementScreen extends StatefulWidget {
 
 class _AchievementScreenState extends State<AchievementScreen> {
   List<Widget> _items = <Widget>[];
-  String _index ='';
+  String listNo ='';
   @override
   void initState() {
     super.initState();
@@ -74,12 +74,12 @@ class _AchievementScreenState extends State<AchievementScreen> {
         // leading: (item['getupstatus'].toString() == cnsGetupStatusS)
         //     ? const Icon(Icons.thumb_up)
         //     : const Icon(Icons.redo),
-        title:Text('      ${item['id']}             ${item['title']}',
+        title:Text('      ${item['No']}             ${item['title']}',
           style: const TextStyle(color: Colors.grey,fontSize: 20),),
         dense: true,
-          selected: _index == item['id'],
+          selected: listNo == item['No'],
           onTap: () {
-            _index = item['id'];
+            listNo = item['No'];
             _tapTile();
           }
       ));
@@ -95,11 +95,10 @@ class _AchievementScreenState extends State<AchievementScreen> {
     int intComboNum = 0;
     int intDueNum = 0;
     int intCombodueNum = 0;
-    String strCondition ='';
     String strContent = '';
     for (Map item in achievementMapList)
       {
-        if(item['id'] == _index) {
+        if(item['No'] == listNo) {
           strTitle = item['title'].toString();
           strBody = item['body'].toString();
           intNum = item['num'];

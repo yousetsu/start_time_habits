@@ -115,6 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     loadPref();
     loadSetting();
+    Timer.periodic(Duration(seconds: 1), _onTimer);
   }
   @override
   Widget build(BuildContext context) {
@@ -528,5 +529,16 @@ class _MyHomePageState extends State<MyHomePage> {
     await database.close();
     return result;
 
+  }
+  void _onTimer(Timer timer) {
+    /// 現在時刻を取得する
+    var now = DateTime.now();
+    /// 「時:分:秒」表記に文字列を変換するdateFormatを宣言する
+    var dateFormat = DateFormat('HH:mm:ss');
+    /// nowをdateFormatでstringに変換する
+    var timeString = dateFormat.format(now);
+    setState(() => {
+      _time = timeString
+    });
   }
 }

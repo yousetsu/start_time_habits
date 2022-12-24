@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
+import 'package:sqflite/sqflite.dart';
 import './global.dart';
+
+List<Map> achievementUserMap = <Map>[];
+
 class AchievementScreen extends StatefulWidget {
   const AchievementScreen({Key? key}) : super(key: key); //コンストラクタ
   @override
@@ -64,8 +69,19 @@ class _AchievementScreenState extends State<AchievementScreen> {
   }
   void getItems() async {
     List<Widget> list = <Widget>[];
+    //アチーブメントユーザーマスタから達成状況をロード
+    achievementUserMap = await  _loadAchievementUser();
+
+    bool boolAchieveReleaseFlg = false;
 
     for (Map item in achievementMapList) {
+      boolAchieveReleaseFlg = false;
+      //既にアチーブメント達成してたら白色表示解放
+      for (Map serchAchMap in achievementUserMap){
+        if( item['No'] == serchAchMap['No']){
+          boolAchieveReleaseFlg = true;
+        }
+      }
       list.add(ListTile(
         //tileColor: Colors.grey,
         // tileColor: (item['getupstatus'].toString() == cnsGetupStatusS)
@@ -75,7 +91,7 @@ class _AchievementScreenState extends State<AchievementScreen> {
         //     ? const Icon(Icons.thumb_up)
         //     : const Icon(Icons.redo),
         title:Text('      ${item['No']}             ${item['title']}',
-          style: const TextStyle(color: Colors.grey,fontSize: 20),),
+          style:  TextStyle(color: boolAchieveReleaseFlg ? Colors.white : Colors.grey,fontSize: 20),),
         dense: true,
           selected: listNo == item['No'],
           onTap: () {
@@ -96,6 +112,18 @@ class _AchievementScreenState extends State<AchievementScreen> {
     int intDueNum = 0;
     int intCombodueNum = 0;
     String strContent = '';
+    bool boolAchRelease = false;
+    //アチーブメントを達成していないものは表示しない
+    for (Map serchAchMap in achievementUserMap){
+      debugPrint('listNo: $listNo  serchAchMap:${serchAchMap['No']}');
+      if( serchAchMap['No'] == listNo) {
+        boolAchRelease = true;
+      }
+    }
+   if (!boolAchRelease){
+     return;
+   }
+
     for (Map item in achievementMapList)
       {
         if(item['No'] == listNo) {
@@ -132,5 +160,17 @@ class _AchievementScreenState extends State<AchievementScreen> {
           ],
         ));
         //.then<void>((value) => resultAlert(value));
+  }
+  /*------------------------------------------------------------------
+アチーブメントユーザーマスタロード
+ -------------------------------------------------------------------*/
+  Future<List<Map>> _loadAchievementUser() async{
+    String dbPath = await getDatabasesPath();
+    String path = p.join(dbPath, 'achievement.db');
+    Database database = await openDatabase(path, version: 1);
+    List<Map> result = await database.rawQuery("SELECT * from achievement_user ");
+    await database.close();
+    return result;
+
   }
 }

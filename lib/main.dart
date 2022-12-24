@@ -11,6 +11,7 @@ import 'dart:io';
 import './global.dart';
 
 const String strCnsSqlCreateRireki ="CREATE TABLE IF NOT EXISTS rireki(id INTEGER PRIMARY KEY, goaltime TEXT, realtime TEXT, status TEXT, kaku1 INTEGER, kaku2 INTEGER, kaku3 TEXT, kaku4 TEXT)";
+const String strCnsSqlCreateAchievement ="CREATE TABLE IF NOT EXISTS achievement_user(id INTEGER PRIMARY KEY, No TEXT,kaku1 INTEGER, kaku2 INTEGER, kaku3 TEXT, kaku4 TEXT)";
 
 //-------------------------------------------------------------
 //   DB
@@ -49,6 +50,14 @@ Future<void> firstRun() async {
         await db.execute(strCnsSqlCreateRireki);
         await db.close();
       });
+  //
+  path = p.join(dbpath, "achievement.db");
+  await openDatabase(path, version: 1,
+      onCreate: (Database db, int version) async {
+        await db.execute(strCnsSqlCreateAchievement);
+        await db.close();
+      });
+
 }
 //-------------------------------------------------------------
 //   main
@@ -248,21 +257,8 @@ class _MyHomePageState extends State<MyHomePage> {
       switch (value) {
         case 'Yes':
           //履歴・習慣状況テーブルに更新
+          //アチーブメント判定・表示、データ登録
           saveRirekiHabitsData();
-
-          //アチーブメント判定
-
-          //アチーブメントがあれば表示
-          // showDialog(context: context,
-          //     builder: (BuildContext context) => AlertDialog(
-          //       title: Text(AppLocalizations.of(context)!.confirm),
-          //       content: Text(AppLocalizations.of(context)!.moveforward),
-          //       actions: <Widget>[
-          //         TextButton(
-          //             child: const Text('OK'),
-          //             onPressed: () => Navigator.pop<String>(context, 'Ok')),
-          //       ],
-          //     )).then<void>((value) => resultSuccess(value));
           break;
         case 'No':
           break;

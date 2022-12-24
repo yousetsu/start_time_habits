@@ -89,11 +89,43 @@ class _AchievementScreenState extends State<AchievementScreen> {
     });
   }
   void _tapTile() {
+    String strTitle ='';
+    String strBody ='';
+    int intNum = 0;
+    int intComboNum = 0;
+    int intDueNum = 0;
+    int intCombodueNum = 0;
+    String strCondition ='';
+    String strContent = '';
+    for (Map item in achievementMapList)
+      {
+        if(item['id'] == _index) {
+          strTitle = item['title'].toString();
+          strBody = item['body'].toString();
+          intNum = item['num'];
+          intComboNum = item['combo_num'];
+          intDueNum = item['due_num'];
+          intCombodueNum = item['combodue_num'];
+        }
+      }
+
+    if(intNum > 0){
+      strContent ='$strBody \n\n <達成条件>\n 習慣実行回数　$intNum回以上\n ';
+    }
+    if(intComboNum > 0){
+      strContent ='$strBody \n\n <達成条件>\n 習慣連続実行回数　$intComboNum回以上\n ';
+    }
+    if(intComboNum > 0){
+      strContent ='$intDueNum \n\n <達成条件>\n 目標時間内に実行した回数　$intDueNum回以上\n ';
+    }
+    if(intCombodueNum > 0){
+      strContent ='$intCombodueNum \n\n <達成条件>\n 目標時間内に実行した連続回数　$intCombodueNum回以上\n ';
+    }
     showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-          title:  Text('内容'),
-          content: Text('No. $_index を選択しました'),
+          title:  Text(strTitle),
+          content: Text(strContent),
           actions: <Widget>[
             TextButton(
                 child: Text('閉じる'),

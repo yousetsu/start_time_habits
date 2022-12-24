@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'dart:async';
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
@@ -110,6 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
   DateTime everyTime = DateTime.utc(0, 0, 0);
   DateTime normalTime = DateTime.utc(0, 0, 0);
   DateTime holidayTime = DateTime.utc(0, 0, 0);
+  String _time = '';
   @override
   void initState() {
     super.initState();
@@ -132,9 +134,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   decoration: BoxDecoration(border: Border.all(color: Colors.lightBlueAccent), borderRadius: BorderRadius.circular(10), color: Colors.lightBlueAccent,),
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children:  const <Widget>[
+                      children:   <Widget>[
                         Text('習慣開始まで',style:TextStyle(fontSize: 20.0)),
-                        Text('あと　時間　分　秒',style:TextStyle(fontSize: 20.0))
+                        Text(_time.toString(),style:TextStyle(fontSize: 20.0))
                       ],
                   ),
                 ),
@@ -536,7 +538,7 @@ class _MyHomePageState extends State<MyHomePage> {
     /// 「時:分:秒」表記に文字列を変換するdateFormatを宣言する
     var dateFormat = DateFormat('HH:mm:ss');
     /// nowをdateFormatでstringに変換する
-    var timeString = dateFormat.format(now);
+    String timeString = dateFormat.format(now);
     setState(() => {
       _time = timeString
     });

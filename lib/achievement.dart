@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import './global.dart';
 class AchievementScreen extends StatefulWidget {
   const AchievementScreen({Key? key}) : super(key: key); //コンストラクタ
   @override
@@ -6,23 +7,30 @@ class AchievementScreen extends StatefulWidget {
 }
 
 class _AchievementScreenState extends State<AchievementScreen> {
+  List<Widget> _items = <Widget>[];
   @override
   void initState() {
     super.initState();
+    getItems();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('習慣状況')),
-      body: SingleChildScrollView(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const <Widget>[
-                Text('習慣状況',style:TextStyle(fontSize: 20.0)),
-              ]
-          )
-      ),
+      appBar: AppBar(title: const Text('称号')),
+     // body: SingleChildScrollView(
+     //   child:Column(
+          body: Column(
+          children: <Widget>[
+            _listHeader(),
+            Expanded(
+              child: ListView(
+                children: _items,
+              ),
+            ),
+          ],
+        ),
+      //),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 3,
         items: const <BottomNavigationBarItem>[
@@ -42,5 +50,35 @@ class _AchievementScreenState extends State<AchievementScreen> {
         },
       ),
     );
+  }
+  Widget _listHeader() {
+    return Container(
+        decoration:  const BoxDecoration(
+            border: Border(bottom: BorderSide(width: 1.0, color: Colors.grey))),
+        child: ListTile(
+            title:  Row(children:  <Widget>[
+              Expanded(child:  Text('No', style:  const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))),
+              Expanded(child:  Text('title', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))),
+            ])));
+  }
+  void getItems() async {
+    List<Widget> list = <Widget>[];
+
+    for (Map item in achievementMapList) {
+      list.add(ListTile(
+        // tileColor: (item['getupstatus'].toString() == cnsGetupStatusS)
+        //     ? Colors.green
+        //     : Colors.grey,
+        // leading: (item['getupstatus'].toString() == cnsGetupStatusS)
+        //     ? const Icon(Icons.thumb_up)
+        //     : const Icon(Icons.redo),
+        title:Text('      ${item['id']}             ${item['title']}',
+          style: const TextStyle(color: Colors.white,fontSize: 20),),
+        dense: true,
+      ));
+    }
+    setState(() {
+      _items = list;
+    });
   }
 }

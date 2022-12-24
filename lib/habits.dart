@@ -23,18 +23,43 @@ class _HabitsScreenState extends State<HabitsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('習慣状況')),
-        body:
+        body:SingleChildScrollView(
+          child: Column(
+              //mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children:  <Widget>[
               Container(
-                margin: const EdgeInsets.only(top:20, left:20),
+               // margin: const EdgeInsets.only(top:20, left:20),
                 child: CalendarCarousel<Event>(
                   //アイコンを表示する日付について、EventのList
                   markedDatesMap: _getMarkedDateMap(context),
                   markedDateShowIcon: true,
+                  height: 420.0,
                   markedDateIconMaxShown: 1,
                   markedDateMoreShowTotal: null,
                   markedDateIconBuilder: (event)=>event.icon,  //アイコン
                 ),
-              ), //
+              ),
+                Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                   children:  <Widget>[
+                    Icon(Icons.thumb_up,color: Colors.white),
+                    Text('・・・習慣実行',style:TextStyle(fontSize: 20.0,color: Colors.white)),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children:  <Widget>[
+                    Icon(Icons.diamond,color: Colors.white),
+                    Text('・・・目標時間内に習慣実行',style:TextStyle(fontSize: 20.0,color: Colors.white)),
+                  ],
+                ),
+              ]
+          ),
+
+        ),
+
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 1,
         items: const <BottomNavigationBarItem>[

@@ -8,6 +8,7 @@ import './achievement.dart';
 import './setting.dart';
 import './const.dart';
 import 'dart:io';
+import './global.dart';
 
 const String strCnsSqlCreateRireki ="CREATE TABLE IF NOT EXISTS rireki(id INTEGER PRIMARY KEY, goaltime TEXT, realtime TEXT, status TEXT, kaku1 INTEGER, kaku2 INTEGER, kaku3 TEXT, kaku4 TEXT)";
 

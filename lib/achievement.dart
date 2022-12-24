@@ -8,6 +8,7 @@ class AchievementScreen extends StatefulWidget {
 
 class _AchievementScreenState extends State<AchievementScreen> {
   List<Widget> _items = <Widget>[];
+  String _index ='';
   @override
   void initState() {
     super.initState();
@@ -66,6 +67,7 @@ class _AchievementScreenState extends State<AchievementScreen> {
 
     for (Map item in achievementMapList) {
       list.add(ListTile(
+        //tileColor: Colors.grey,
         // tileColor: (item['getupstatus'].toString() == cnsGetupStatusS)
         //     ? Colors.green
         //     : Colors.grey,
@@ -73,12 +75,31 @@ class _AchievementScreenState extends State<AchievementScreen> {
         //     ? const Icon(Icons.thumb_up)
         //     : const Icon(Icons.redo),
         title:Text('      ${item['id']}             ${item['title']}',
-          style: const TextStyle(color: Colors.white,fontSize: 20),),
+          style: const TextStyle(color: Colors.grey,fontSize: 20),),
         dense: true,
+          selected: _index == item['id'],
+          onTap: () {
+            _index = item['id'];
+            _tapTile();
+          }
       ));
     }
     setState(() {
       _items = list;
     });
+  }
+  void _tapTile() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title:  Text('内容'),
+          content: Text('No. $_index を選択しました'),
+          actions: <Widget>[
+            TextButton(
+                child: Text('閉じる'),
+                onPressed: () => Navigator.pop<String>(context, 'Yes')),
+          ],
+        ));
+        //.then<void>((value) => resultAlert(value));
   }
 }

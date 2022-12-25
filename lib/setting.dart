@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_picker/flutter_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
+import './const.dart';
 class SettingScreen extends StatefulWidget {
   const SettingScreen({Key? key}) : super(key: key); //コンストラクタ
   @override
@@ -113,7 +114,7 @@ class _SettingScreenState extends State<SettingScreen> {
                     if (value != null) {
                       setState(() {
                         isOnNotification = value;
-                        _saveStrSetting('notification',  isOnNotification? '1':'0');
+                        _saveStrSetting('notification',  isOnNotification? cnsNotificationOn:cnsNotificationOff);
                         loadSetting();
                       });
                     }

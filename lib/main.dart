@@ -9,10 +9,64 @@ import './setting.dart';
 import './const.dart';
 import 'dart:io';
 import './global.dart';
+//時間になったらローカル通知を出すため
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+//kIsWeb(Web判定)を使うため
+import 'package:flutter/foundation.dart';
+//ローカル通知の時間をセットするためタイムゾーンの定義が必要
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 const String strCnsSqlCreateRireki ="CREATE TABLE IF NOT EXISTS rireki(id INTEGER PRIMARY KEY, goaltime TEXT, realtime TEXT, status TEXT, kaku1 INTEGER, kaku2 INTEGER, kaku3 TEXT, kaku4 TEXT)";
 const String strCnsSqlCreateAchievement ="CREATE TABLE IF NOT EXISTS achievement_user(id INTEGER PRIMARY KEY, No TEXT,kaku1 INTEGER, kaku2 INTEGER, kaku3 TEXT, kaku4 TEXT)";
+//アラーム用のID
+const int alarmID = 123456788;
+//-------------------------------------------------------------
+///ローカル通知のための準備
+//-------------------------------------------------------------
 
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+FlutterLocalNotificationsPlugin();
+String? selectedNotificationPayload;
+final StreamController<ReceivedNotification> didReceiveLocalNotificationStream = StreamController<ReceivedNotification>.broadcast();
+final StreamController<String?> selectNotificationStream = StreamController<String?>.broadcast();
+const MethodChannel platform = MethodChannel('dexterx.dev/flutter_local_notifications_example');
+class ReceivedNotification {
+  ReceivedNotification({
+    required this.id,
+    required this.title,
+    required this.body,
+    required this.payload,
+  });
+  final int id;
+  final String? title;
+  final String? body;
+  final String? payload;
+}
+const String navigationActionId = 'id_3';
+@pragma('vm:entry-point')
+void notificationTapBackground(NotificationResponse notificationResponse) {
+  // ignore: avoid_print
+  print('notification(${notificationResponse.id}) action tapped: '
+      '${notificationResponse.actionId} with'
+      ' payload: ${notificationResponse.payload}');
+  if (notificationResponse.input?.isNotEmpty ?? false) {
+    // ignore: avoid_print
+    print(
+        'notification action tapped with input: ${notificationResponse.input}');
+  }
+}
+//タイムゾーン初期化メソッド定義
+Future<void> _configureLocalTimeZone() async {
+  if (kIsWeb || Platform.isLinux) {
+    return;
+  }
+  tz.initializeTimeZones();
+  final String timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
+  tz.setLocalLocation(tz.getLocation(timeZoneName));
+}
 //-------------------------------------------------------------
 //   DB
 //-------------------------------------------------------------
@@ -68,6 +122,37 @@ void main() async{
 
   await firstRun();
 
+  //タイムゾーン初期化
+  await _configureLocalTimeZone();
+
+
+  //通知のための初期化
+  final NotificationAppLaunchDetails? notificationAppLaunchDetails = !kIsWeb &&
+      Platform.isLinux
+      ? null
+      : await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+  if (notificationAppLaunchDetails?.didNotificationLaunchApp ?? false) {
+    selectedNotificationPayload =
+        notificationAppLaunchDetails!.notificationResponse?.payload;
+  }
+  const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+  const InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+    onDidReceiveNotificationResponse:
+        (NotificationResponse notificationResponse) {
+      switch (notificationResponse.notificationResponseType) {
+        case NotificationResponseType.selectedNotification:
+          selectNotificationStream.add(notificationResponse.payload);
+          break;
+        case NotificationResponseType.selectedNotificationAction:
+          if (notificationResponse.actionId == navigationActionId) {
+            selectNotificationStream.add(notificationResponse.payload);
+          }
+          break;
+      }
+    },
+    onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
+  );
   //画面表示
   runApp(const MyApp());
 }
@@ -110,6 +195,10 @@ class _MyHomePageState extends State<MyHomePage> {
   DateTime everyTime = DateTime.utc(0, 0, 0);
   DateTime normalTime = DateTime.utc(0, 0, 0);
   DateTime holidayTime = DateTime.utc(0, 0, 0);
+  String notificationFlg = '0';
+  DateTime notificationTime = DateTime.utc(0, 0, 0);
+  String firstSet = '0';
+
   String limitTime = '';
   bool todayHabitsStart = false; //本日の習慣開始ボタンを押したか？
   @override
@@ -118,6 +207,7 @@ class _MyHomePageState extends State<MyHomePage> {
     loadPref();
     loadSetting();
     judgeTodatyStartTime();
+    setLocalNotification();
     Timer.periodic(Duration(seconds: 1), _onTimer);
   }
   @override
@@ -129,8 +219,8 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children:  <Widget>[
                 Container(
-                    margin: const EdgeInsets.all(20.0),
-                    padding: const EdgeInsets.all(50.0),
+                    margin: const EdgeInsets.all(10.0),
+                    padding: const EdgeInsets.all(40.0),
                     alignment: Alignment.bottomCenter,
                   decoration: BoxDecoration(border: Border.all(color: Colors.lightBlueAccent), borderRadius: BorderRadius.circular(10), color: Colors.lightBlueAccent,),
                   child: Column(
@@ -142,8 +232,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.all(20.0),
-                  padding: const EdgeInsets.all(20.0),
+                  margin: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(10.0),
                   alignment: Alignment.bottomCenter,
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.lightBlueAccent),
@@ -159,8 +249,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.all(20.0),
-                  padding: const EdgeInsets.all(20.0),
+                  margin: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(10.0),
                   alignment: Alignment.bottomCenter,
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.lightBlueAccent),
@@ -176,8 +266,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.all(20.0),
-                  padding: const EdgeInsets.all(20.0),
+                  margin: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(10.0),
                   alignment: Alignment.bottomCenter,
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.lightBlueAccent),
@@ -193,8 +283,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.all(20.0),
-                  padding: const EdgeInsets.all(20.0),
+                  margin: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(10.0),
                   alignment: Alignment.bottomCenter,
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.lightBlueAccent),
@@ -303,6 +393,9 @@ class _MyHomePageState extends State<MyHomePage> {
         normalTime = DateTime.parse(item['normalstarttime'].toString());
         holidayTime = DateTime.parse(item['holidaystarttime'].toString());
         everyTime = DateTime.parse(item['everystarttime'].toString());
+        notificationFlg = item['notification'].toString();
+        notificationTime = DateTime.parse(item['everystarttime'].toString());
+        firstSet = item['firstset'].toString();
       });
     }
     await database.close();
@@ -613,4 +706,84 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     debugPrint(' todayHabitsStart2 $todayHabitsStart');
   }
+  Future<void> setLocalNotification() async {
+
+    //そもそも通知制御しないのであれば通知セットしない
+    if(notificationFlg == cnsNotificationOff){
+      debugPrint('そもそも通知制御しないのであれば通知セットしない');
+      return;
+    }
+
+   //通知セットされているかどうか判定
+    final List<ActiveNotification>? activeNotifications = await  flutterLocalNotificationsPlugin.getActiveNotifications();
+    //既に通知がセットされているのであればローカル通知セットしない
+    if(activeNotifications == null){
+      debugPrint('既に通知がセットされているのであればローカル通知セットしない');
+      return;
+    }
+    //タイマー時間算出
+    String  strGoalTime;
+    if (strMode == cnsModeEveryDay){
+      strGoalTime = everyTime.toString();
+    }else{
+      //土日の場合
+      if (DateTime.now().weekday == 6 || DateTime.now().weekday == 7) {
+        strGoalTime = holidayTime.toString();
+      }
+      //平日の場合
+      else {
+        strGoalTime = normalTime.toString();
+      }
+    }
+
+    DateTime dtnotificationTime = DateTime.parse(notificationTime.toString());
+    DateTime goalTimeParse = DateTime.parse(strGoalTime.toString());
+    /// 現在時刻のみを取得する
+    DateTime nowTime = DateTime(2022,12,10,DateTime.now().hour,DateTime.now().minute,DateTime.now().second);
+
+    ///目標時間のみを取得する
+    DateTime goalTime = DateTime(2022,12,10,goalTimeParse.hour,goalTimeParse.minute,goalTimeParse.second);
+
+    ///通知時間のみを取得する
+    DateTime notiTime = DateTime(2022,12,10,notificationTime.hour,notificationTime.minute,notificationTime.second);
+
+    ///通知したい時間を算出 (目標時間 - 通知時間)
+    int notiTimeSec = notificationTime.hour * 3600 +  notificationTime.minute*60 + notificationTime.second;
+    int notifiSecond;
+    ///通知したい時間
+    DateTime dtNotifTime = goalTime.subtract(Duration(seconds: notiTimeSec)) ;
+    ///通知したい時間 - 現在時刻 (秒換算)
+    notifiSecond = dtNotifTime.difference(nowTime).inSeconds;
+
+    if(notifiSecond <= 0){
+      debugPrint('既に通知時間を過ぎているならローカル通知セットしない');
+      return;
+    }
+
+    ///通知セット
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+        alarmID,
+        '勉強時間アラーム',
+        '習慣開始まで、あと何時間何分です。',
+        tz.TZDateTime.now(tz.local).add(Duration(seconds: notifiSecond)),
+        const NotificationDetails(
+            android: AndroidNotificationDetails(
+                'full screen channel id', 'full screen channel name',
+                channelDescription: 'full screen channel description',
+                priority: Priority.high,
+                playSound:false,
+                importance: Importance.high,
+                fullScreenIntent: true)),
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime);
+
+    if(notifiSecond <= 0){
+      debugPrint('$notifiSecond 秒後にローカル通知');
+      return;
+    }
+  }
+
+
+
 }

@@ -204,10 +204,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    loadPref();
-    loadSetting();
-    judgeTodatyStartTime();
-    setLocalNotification();
+    init();
+
     Timer.periodic(Duration(seconds: 1), _onTimer);
   }
   @override
@@ -363,7 +361,7 @@ class _MyHomePageState extends State<MyHomePage> {
   /*------------------------------------------------------------------
 第一画面ロード
  -------------------------------------------------------------------*/
-  void loadPref() async {
+  Future<void>  loadPref() async {
     String dbPath = await getDatabasesPath();
     String path = p.join(dbPath, 'internal_assets.db');
      Database database = await openDatabase(path, version: 1);
@@ -382,7 +380,7 @@ class _MyHomePageState extends State<MyHomePage> {
   /*------------------------------------------------------------------
 設定情報のロード
  -------------------------------------------------------------------*/
-  void loadSetting() async {
+  Future<void>  loadSetting() async {
     String dbPath = await getDatabasesPath();
     String path = p.join(dbPath, 'internal_assets.db');
     Database database = await openDatabase(path, version: 1);
@@ -399,6 +397,7 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     }
     await database.close();
+    debugPrint('loadSetting notificationFlg:$notificationFlg');
   }
   /*------------------------------------------------------------------
 直前の履歴データロード
@@ -679,7 +678,7 @@ class _MyHomePageState extends State<MyHomePage> {
   /*------------------------------------------------------------------
 本日既に習慣を開始したかどうかを判定する
  -------------------------------------------------------------------*/
-  void judgeTodatyStartTime() async {
+  Future<void>  judgeTodatyStartTime() async {
     String? strPreRealTime = '';
     DateTime dtPreRealTime;
     //現在日付を取得
@@ -709,6 +708,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> setLocalNotification() async {
 
     //そもそも通知制御しないのであれば通知セットしない
+    debugPrint('setLocalNotification notificationFlg:$notificationFlg');
     if(notificationFlg == cnsNotificationOff){
       debugPrint('そもそも通知制御しないのであれば通知セットしない');
       return;
@@ -736,7 +736,6 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }
 
-    DateTime dtnotificationTime = DateTime.parse(notificationTime.toString());
     DateTime goalTimeParse = DateTime.parse(strGoalTime.toString());
     /// 現在時刻のみを取得する
     DateTime nowTime = DateTime(2022,12,10,DateTime.now().hour,DateTime.now().minute,DateTime.now().second);
@@ -784,6 +783,11 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-
+  void init() async {
+  await  loadPref();
+  await  loadSetting();
+  await  judgeTodatyStartTime();
+  await  setLocalNotification();
+  }
 
 }

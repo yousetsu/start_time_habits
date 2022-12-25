@@ -17,7 +17,7 @@ import 'package:flutter/foundation.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 
 const String strCnsSqlCreateRireki ="CREATE TABLE IF NOT EXISTS rireki(id INTEGER PRIMARY KEY, goaltime TEXT, realtime TEXT, status TEXT, kaku1 INTEGER, kaku2 INTEGER, kaku3 TEXT, kaku4 TEXT)";
 const String strCnsSqlCreateAchievement ="CREATE TABLE IF NOT EXISTS achievement_user(id INTEGER PRIMARY KEY, No TEXT,kaku1 INTEGER, kaku2 INTEGER, kaku3 TEXT, kaku4 TEXT)";
@@ -782,7 +782,9 @@ class _MyHomePageState extends State<MyHomePage> {
       return;
     }
   }
-
+  /*------------------------------------------------------------------
+初期処理
+ -------------------------------------------------------------------*/
   void init() async {
   await  loadPref();
   await  loadSetting();

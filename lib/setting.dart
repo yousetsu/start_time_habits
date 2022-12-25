@@ -4,6 +4,13 @@ import 'package:flutter_picker/flutter_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 import './const.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+import 'main.dart';
+//ローカル通知の時間をセットするためタイムゾーンの定義が必要
+import 'package:timezone/timezone.dart' as tz;
+
+
 class SettingScreen extends StatefulWidget {
   const SettingScreen({Key? key}) : super(key: key); //コンストラクタ
   @override
@@ -130,6 +137,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         setState(() => {
                           notificationTime = DateTime.utc(2016, 5, 1, value[0], value[1], 0),
                           _saveStrSetting('notificationtime',notificationTime.toString()),
+                          setLocalNotification(),
                           loadSetting()
                         });
                       },
@@ -222,6 +230,81 @@ class _SettingScreenState extends State<SettingScreen> {
     });
     database.close();
   }
+  //-------------------------------------------------------------
+//   ローカル通知セット
+//-------------------------------------------------------------
+  Future<void> setLocalNotification() async {
 
+    if(notification == cnsNotificationOff){
+      debugPrint('そもそも通知制御しないのであれば通知セットしない(設定画面)');
+      return;
+    }
+
+    //通知セットされているかどうか判定
+    final List<ActiveNotification>? activeNotifications = await  flutterLocalNotificationsPlugin.getActiveNotifications();
+    //既に通知がセットされているのであればローカル通知セットしない
+    if(activeNotifications == null){
+      debugPrint('既に通知がセットされているのであればローカル通知セットしない(設定画面)');
+      return;
+    }
+    //タイマー時間算出
+    String  strGoalTime;
+    if (strMode == cnsModeEveryDay){
+      strGoalTime = everyTime.toString();
+    }else{
+      //土日の場合
+      if (DateTime.now().weekday == 6 || DateTime.now().weekday == 7) {
+        strGoalTime = holidayTime.toString();
+      }
+      //平日の場合
+      else {
+        strGoalTime = normalTime.toString();
+      }
+    }
+
+    DateTime goalTimeParse = DateTime.parse(strGoalTime.toString());
+    /// 現在時刻のみを取得する
+    DateTime nowTime = DateTime(2022,12,10,DateTime.now().hour,DateTime.now().minute,DateTime.now().second);
+
+    ///目標時間のみを取得する
+    DateTime goalTime = DateTime(2022,12,10,goalTimeParse.hour,goalTimeParse.minute,goalTimeParse.second);
+
+
+    ///通知したい時間を算出 (目標時間 - 通知時間)
+    int notiTimeSec = notificationTime.hour * 3600 +  notificationTime.minute*60 + notificationTime.second;
+    int notifiSecond;
+    ///通知したい時間
+    DateTime dtNotifTime = goalTime.subtract(Duration(seconds: notiTimeSec)) ;
+    ///通知したい時間 - 現在時刻 (秒換算)
+    notifiSecond = dtNotifTime.difference(nowTime).inSeconds;
+
+    if(notifiSecond <= 0){
+      debugPrint('既に通知時間を過ぎているならローカル通知セットしない');
+      return;
+    }
+
+    ///通知セット
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+        alarmID,
+        '勉強時間アラーム',
+        '習慣開始まで、あと何時間何分です。',
+        tz.TZDateTime.now(tz.local).add(Duration(seconds: notifiSecond)),
+        const NotificationDetails(
+            android: AndroidNotificationDetails(
+                'full screen channel id', 'full screen channel name',
+                channelDescription: 'full screen channel description',
+                priority: Priority.high,
+                playSound:false,
+                importance: Importance.high,
+                fullScreenIntent: true)),
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime);
+
+    if(notifiSecond <= 0){
+      debugPrint('$notifiSecond 秒後にローカル通知');
+      return;
+    }
+  }
 }
 

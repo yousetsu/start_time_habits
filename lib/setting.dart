@@ -122,6 +122,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       setState(() {
                         isOnNotification = value;
                         _saveStrSetting('notification',  isOnNotification? cnsNotificationOn:cnsNotificationOff);
+                        setLocalNotification();
                         loadSetting();
                       });
                     }
@@ -137,7 +138,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         setState(() => {
                           notificationTime = DateTime.utc(2016, 5, 1, value[0], value[1], 0),
                           _saveStrSetting('notificationtime',notificationTime.toString()),
-                          setLocalNotification(),
+
                           loadSetting()
                         });
                       },
@@ -235,7 +236,7 @@ class _SettingScreenState extends State<SettingScreen> {
 //-------------------------------------------------------------
   Future<void> setLocalNotification() async {
 
-    if(notification == cnsNotificationOff){
+    if(isOnNotification == false){
       debugPrint('そもそも通知制御しないのであれば通知セットしない(設定画面)');
       return;
     }
@@ -279,7 +280,7 @@ class _SettingScreenState extends State<SettingScreen> {
     notifiSecond = dtNotifTime.difference(nowTime).inSeconds;
 
     if(notifiSecond <= 0){
-      debugPrint('既に通知時間を過ぎているならローカル通知セットしない');
+      debugPrint('既に通知時間を過ぎているならローカル通知セットしない(設定画面)');
       return;
     }
 

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'dart:async';
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
@@ -111,12 +110,14 @@ class _MyHomePageState extends State<MyHomePage> {
   DateTime everyTime = DateTime.utc(0, 0, 0);
   DateTime normalTime = DateTime.utc(0, 0, 0);
   DateTime holidayTime = DateTime.utc(0, 0, 0);
-  String _time = '';
+  String limitTime = '';
+  bool todayHabitsStart = false; //本日の習慣開始ボタンを押したか？
   @override
   void initState() {
     super.initState();
     loadPref();
     loadSetting();
+    judgeTodatyStartTime();
     Timer.periodic(Duration(seconds: 1), _onTimer);
   }
   @override
@@ -136,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children:   <Widget>[
                         Text('習慣開始まで',style:TextStyle(fontSize: 20.0)),
-                        Text(_time.toString(),style:TextStyle(fontSize: 20.0))
+                        Text(limitTime.toString(),style:TextStyle(fontSize: 20.0))
                       ],
                   ),
                 ),
@@ -211,9 +212,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 SizedBox(
                   width: 200, height: 70,
                   child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(foregroundColor: Colors.white, backgroundColor: primaryColor, shape: const StadiumBorder(), elevation: 16,),
-                    onPressed: buttonPressed,
-                    child: Text( '習慣開始', style: const TextStyle(fontSize: 35.0, color: Colors.white,),),
+                    style: ElevatedButton.styleFrom(foregroundColor: Colors.white, backgroundColor:todayHabitsStart?Colors.grey:primaryColor, shape: const StadiumBorder(), elevation: 16,),
+                    onPressed: todayHabitsStart?null:buttonPressed,
+                    child: Text( todayHabitsStart?'済':'習慣開始', style: const TextStyle(fontSize: 35.0, color: Colors.white,),),
                   ),
                 ),
               ]
@@ -259,6 +260,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       switch (value) {
         case 'Yes':
+          todayHabitsStart = true;
           //履歴・習慣状況テーブルに更新
           //アチーブメント判定・表示、データ登録
           saveRirekiHabitsData();
@@ -533,14 +535,82 @@ class _MyHomePageState extends State<MyHomePage> {
 
   }
   void _onTimer(Timer timer) {
-    /// 現在時刻を取得する
-    var now = DateTime.now();
+
+    String  strGoalTime;
+    if (strMode == cnsModeEveryDay){
+      strGoalTime = everyTime.toString();
+    }else{
+      //土日の場合
+      if (DateTime.now().weekday == 6 || DateTime.now().weekday == 7) {
+        strGoalTime = holidayTime.toString();
+      }
+      //平日の場合
+      else {
+        strGoalTime = normalTime.toString();
+      }
+    }
+
+    DateTime goalTimeParse = DateTime.parse(strGoalTime.toString());
+    /// 現在時刻のみを取得する
+    DateTime nowTime = DateTime(2022,12,10,DateTime.now().hour,DateTime.now().minute,DateTime.now().second);
+
+    ///目標時間のみを取得する
+    DateTime goalTime = DateTime(2022,12,10,goalTimeParse.hour,goalTimeParse.minute,goalTimeParse.second);
+
+    ///目標時間 - 現在時刻
+    int diffSecond;
+    diffSecond = goalTime.difference(nowTime).inSeconds;
+
+    int intHour;
+    int intHourAmariSec;
+    int intMinute;
+    int intSecond;
+    intHour = (diffSecond / 3600).floor();
+    intHourAmariSec = (diffSecond % 3600).floor();
+    intMinute = (intHourAmariSec / 60).floor();
+    intSecond = (intHourAmariSec % 60).floor();
+
     /// 「時:分:秒」表記に文字列を変換するdateFormatを宣言する
-    var dateFormat = DateFormat('HH:mm:ss');
+   // var dateFormat = DateFormat('HH:mm:ss');
     /// nowをdateFormatでstringに変換する
-    String timeString = dateFormat.format(now);
+   // String timeString = dateFormat.format(now);
+
     setState(() => {
-      _time = timeString
+      if(todayHabitsStart == false){
+        limitTime = '$intHour時間　$intMinute分　$intSecond秒'
+      }else{
+        limitTime = '既に習慣開始済み'
+      }
     });
+  }
+  /*------------------------------------------------------------------
+本日既に習慣を開始したかどうかを判定する
+ -------------------------------------------------------------------*/
+  void judgeTodatyStartTime() async {
+    String? strPreRealTime = '';
+    DateTime dtPreRealTime;
+    //現在日付を取得
+    DateTime dtNowDate = DateTime.now();
+    //履歴テーブルから直前の日時を取得
+    strPreRealTime = await _loadStrRireki('realtime');
+
+    if(strPreRealTime != null){
+      dtPreRealTime = DateTime.parse(strPreRealTime);
+      debugPrint(' todayHabitsStart1 $todayHabitsStart');
+      debugPrint(' dtPreRealTime ${dtPreRealTime.year} ${dtPreRealTime.month} ${dtPreRealTime.day})');
+      debugPrint(' dtNowDate ${dtNowDate.year} ${dtNowDate.month} ${dtNowDate.day})');
+      if(dtNowDate.year == dtPreRealTime.year
+          && dtNowDate.month == dtPreRealTime.month
+          && dtNowDate.day == dtPreRealTime.day){
+        setState(()=> {
+          todayHabitsStart = true
+        });
+      }
+    }else{
+      setState(() =>{
+        todayHabitsStart = false
+      });
+    }
+    debugPrint(' todayHabitsStart2 $todayHabitsStart');
   }
 }

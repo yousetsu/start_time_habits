@@ -419,7 +419,6 @@ class _MyHomePageState extends State<MyHomePage> {
 //-------------------------------------------------------------
 //   データベースにデータ保存
 //-------------------------------------------------------------
-
   void saveRirekiHabitsData() async {
     String strNowDate = DateTime.now().toString();
     String strGoalTime;
@@ -613,6 +612,54 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     await database.close();
     }
+
+    ///明日の通知分をセット
+    //そもそも通知制御しないのであれば通知セットしない
+    debugPrint('setLocalNotification notificationFlg:$notificationFlg');
+    if(notificationFlg == cnsNotificationOff){
+      debugPrint('そもそも通知制御しないのであれば通知セットしない(ボタン押下時)');
+      return;
+    }
+    //明日の目標時刻タイマー時間算出
+    DateTime goalTimeParse = DateTime.parse(strGoalTime.toString());
+    /// 現在時刻のみを取得する
+    DateTime nowTime = DateTime(2022,12,10,DateTime.now().hour,DateTime.now().minute,DateTime.now().second);
+
+    ///明日の目標時間のみを取得する
+    DateTime goalTime = DateTime(2022,12,11,goalTimeParse.hour,goalTimeParse.minute,goalTimeParse.second);
+
+    ///通知したい時間を算出 (明日の目標時間 - 通知時間)
+    int notiTimeSec = notificationTime.hour * 3600 +  notificationTime.minute*60 + notificationTime.second;
+    int notifiSecond;
+    ///通知したい時間
+    DateTime dtNotifTime = goalTime.subtract(Duration(seconds: notiTimeSec)) ;
+    ///通知したい時間 - 現在時刻 (秒換算)
+    notifiSecond = dtNotifTime.difference(nowTime).inSeconds;
+
+    ///通知セット
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+        alarmID,
+        '勉強時間アラーム',
+        '習慣開始まで、あと${notificationTime.hour}時間${notificationTime.minute}分です。',
+        tz.TZDateTime.now(tz.local).add(Duration(seconds: notifiSecond)),
+        const NotificationDetails(
+            android: AndroidNotificationDetails(
+                'full screen channel id', 'full screen channel name',
+                channelDescription: 'full screen channel description',
+                priority: Priority.high,
+                playSound:false,
+                importance: Importance.high,
+                fullScreenIntent: true)),
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime);
+
+    if(notifiSecond <= 0){
+      debugPrint('$notifiSecond 秒後にローカル通知（ボタン押下時）');
+      return;
+    }
+
+
   }
 /*------------------------------------------------------------------
 アチーブメントユーザーマスタロード
@@ -678,7 +725,7 @@ class _MyHomePageState extends State<MyHomePage> {
   /*------------------------------------------------------------------
 本日既に習慣を開始したかどうかを判定する
  -------------------------------------------------------------------*/
-  Future<void>  judgeTodatyStartTime() async {
+  Future<void>  judgeTodayStartTime() async {
     String? strPreRealTime = '';
     DateTime dtPreRealTime;
     //現在日付を取得
@@ -788,7 +835,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void init() async {
   await  loadPref();
   await  loadSetting();
-  await  judgeTodatyStartTime();
+  await  judgeTodayStartTime();
   await  setLocalNotification();
   }
 

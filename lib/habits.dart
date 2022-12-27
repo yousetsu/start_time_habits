@@ -7,6 +7,7 @@ import './const.dart';
 
 List<Map> mapRireki = <Map>[];
 
+EventList<Event> markedDateMap = new EventList<Event>(events: {});
 class HabitsScreen extends StatefulWidget {
   const HabitsScreen({Key? key}) : super(key: key); //コンストラクタ
   @override
@@ -16,8 +17,8 @@ class HabitsScreen extends StatefulWidget {
 class _HabitsScreenState extends State<HabitsScreen> {
   @override
   void initState()  {
+    makeMarkedDateMap();
     super.initState();
-    _loadRireki();
   }
   @override
   Widget build(BuildContext context) {
@@ -33,7 +34,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
                // margin: const EdgeInsets.only(top:20, left:20),
                 child: CalendarCarousel<Event>(
                   //アイコンを表示する日付について、EventのList
-                  markedDatesMap: _getMarkedDateMap(context),
+                  markedDatesMap: markedDateMap,
                   markedDateShowIcon: true,
                   height: 420.0,
                   markedDateIconMaxShown: 1,
@@ -80,23 +81,28 @@ class _HabitsScreenState extends State<HabitsScreen> {
       ),
     );
   }
-  EventList<Event> _getMarkedDateMap(BuildContext context){
-    EventList<Event> _markedDateMap=new EventList<Event>(events: {});
-    DateTime dateTime= DateTime(0, 0, 0);
-    String strStatus ;
-    for (Map item in mapRireki){
-      dateTime = DateTime( DateTime.parse(item['realtime'].toString()).year,DateTime.parse(item['realtime'].toString()).month,DateTime.parse(item['realtime'].toString()).day);
-      strStatus = item['status'].toString();
-      _markedDateMap.add(dateTime,new Event(date: dateTime, icon: _getIcon(dateTime,strStatus))); //アイコンを作成
-    }
-    // dateTime = DateTime(2022, 12, 10);
-    // _markedDateMap.add(dateTime,new Event(date: dateTime, icon: _getIcon(dateTime,'0')));
+   // EventList<Event> _getMarkedDateMap(BuildContext context)  {
+   //   DateTime dateTime= DateTime(0, 0, 0);
+   //   String strStatus ;
+   //   makeMarkedDateMap();
+
+     // for (Map item in mapRireki){
+     //     dateTime = DateTime( DateTime.parse(item['realtime'].toString
+     //     ()).year,DateTime.parse(item['realtime'].toString()).month,DateTime.parse(item['realtime'].toString()).day);
+     //     strStatus = item['status'].toString();
+     //     _markedDateMap.add(dateTime,new Event(date: dateTime, icon: _getIcon(dateTime,strStatus))); //アイコンを作成
+     // }
+    // debugPrint('直接セット');
+    //  dateTime = DateTime(2022, 12, 10);
+    //  _markedDateMap.add(dateTime,new Event(date: dateTime, icon: _getIcon(dateTime,'0')));
     // dateTime = DateTime(2022, 12, 11);
     // _markedDateMap.add(dateTime,new Event(date: dateTime, icon: _getIcon(dateTime,'1')));
     // dateTime = DateTime(2022, 12, 23);
     // _markedDateMap.add(dateTime,new Event(date: dateTime, icon: _getIcon(dateTime,'1')));
-    return _markedDateMap;
-  }
+
+  //    debugPrint('値返却');
+  //    return _markedDateMap;
+  // }
   Widget _getIcon(DateTime date , String status){
 
     bool _isToday=isSameDay(date, DateTime.now());//今日？
@@ -135,12 +141,47 @@ class _HabitsScreenState extends State<HabitsScreen> {
 履歴データロード
  -------------------------------------------------------------------*/
   Future<String?> _loadRireki() async{
-
     String dbPath = await getDatabasesPath();
-    String path =  p.join(dbPath, 'rireki.db');
+    String path =   p.join(dbPath, 'rireki.db');
     Database database = await openDatabase(path, version: 1);
     mapRireki = await database.rawQuery("SELECT * From rireki order by realtime desc");
     await database.close();
-
   }
+  /*------------------------------------------------------------------
+MarkedDateMap作成
+ -------------------------------------------------------------------*/
+  void makeMarkedDateMap() async{
+
+    DateTime dateTime= DateTime(0, 0, 0);
+    String strStatus ;
+    await _loadRireki();
+
+
+    for (Map item in mapRireki){
+      dateTime = DateTime( DateTime.parse(item['realtime'].toString
+        ()).year,DateTime.parse(item['realtime'].toString()).month,DateTime.parse(item['realtime'].toString()).day);
+      strStatus = item['status'].toString();
+      debugPrint('${DateTime.parse(item['realtime'].toString()).day}');
+      setState(() {
+        markedDateMap.add(dateTime, new Event(
+            date: dateTime, icon: _getIcon(dateTime, strStatus))); //アイコンを作成
+      });
+    }
+    //  dateTime = DateTime(2022, 12, 10);
+    // _markedDateMap.add(dateTime,new Event(date: dateTime, icon: _getIcon(dateTime,'0')));
+    // // dateTime = DateTime(2022, 12, 11);
+    // _markedDateMap.add(dateTime,new Event(date: dateTime, icon: _getIcon(dateTime,'1')));
+    // dateTime = DateTime(2022, 12, 23);
+    // _markedDateMap.add(dateTime,new Event(date: dateTime, icon: _getIcon(dateTime,'1')));
+    debugPrint('makeMarkedDateMap通過');
+  }
+  /*------------------------------------------------------------------
+履歴データロード
+ -------------------------------------------------------------------*/
+  void init() async{
+    debugPrint('カレンダーinit開始');
+    makeMarkedDateMap();
+    debugPrint('カレンダーinit終了');
+  }
+
 }

@@ -213,7 +213,7 @@ class _SettingScreenState extends State<SettingScreen> {
         isOnNotification = (notification == '0')?  false:true;
       });
     }
-    database.close();
+    await  database.close();
   }
 //-------------------------------------------------------------
 //   設定テーブルにデータ保存

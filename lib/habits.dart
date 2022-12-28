@@ -17,8 +17,9 @@ class HabitsScreen extends StatefulWidget {
 class _HabitsScreenState extends State<HabitsScreen> {
   @override
   void initState()  {
-    makeMarkedDateMap();
     super.initState();
+    markedDateMap.clear();
+    makeMarkedDateMap();
   }
   @override
   Widget build(BuildContext context) {
@@ -81,29 +82,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
       ),
     );
   }
-   // EventList<Event> _getMarkedDateMap(BuildContext context)  {
-   //   DateTime dateTime= DateTime(0, 0, 0);
-   //   String strStatus ;
-   //   makeMarkedDateMap();
-
-     // for (Map item in mapRireki){
-     //     dateTime = DateTime( DateTime.parse(item['realtime'].toString
-     //     ()).year,DateTime.parse(item['realtime'].toString()).month,DateTime.parse(item['realtime'].toString()).day);
-     //     strStatus = item['status'].toString();
-     //     _markedDateMap.add(dateTime,new Event(date: dateTime, icon: _getIcon(dateTime,strStatus))); //アイコンを作成
-     // }
-    // debugPrint('直接セット');
-    //  dateTime = DateTime(2022, 12, 10);
-    //  _markedDateMap.add(dateTime,new Event(date: dateTime, icon: _getIcon(dateTime,'0')));
-    // dateTime = DateTime(2022, 12, 11);
-    // _markedDateMap.add(dateTime,new Event(date: dateTime, icon: _getIcon(dateTime,'1')));
-    // dateTime = DateTime(2022, 12, 23);
-    // _markedDateMap.add(dateTime,new Event(date: dateTime, icon: _getIcon(dateTime,'1')));
-
-  //    debugPrint('値返却');
-  //    return _markedDateMap;
-  // }
-  Widget _getIcon(DateTime date , String status){
+  Widget _getIcon(DateTime date , String status,DateTime realDate){
 
     bool _isToday=isSameDay(date, DateTime.now());//今日？
     CalendarCarousel _calendar_default=CalendarCarousel();
@@ -115,13 +94,12 @@ class _HabitsScreenState extends State<HabitsScreen> {
         ), //今日の場合は赤の円の背景　それ以外は無し
     child: Column(
         children: [
-          Text(date.day.toString(),
-            style: TextStyle(
-                color: _isToday? Colors.white: getDayCol(date), fontWeight: FontWeight.w400
-            ),//日付の文字　今日は白、それ以外は平日黒、休日赤
+          Text(date.day.toString(), style: TextStyle(color: _isToday? Colors.white: getDayCol(date), fontWeight: FontWeight.w400),//日付の文字　今日は白、それ以外は平日黒、休日赤
          ),
-         //期限内に開始できたらダイアモンド、そのひ開始できたらサムズアップ
-         SizedBox(height: 2,), Icon(status == cnsStatusHabitsDue ? Icons.diamond:Icons.thumb_up  , color: Colors.white, size: 16,), //日付と一緒に表示するアイコン
+         Text('${realDate.hour.toString().padLeft(2, '0')}:${realDate.minute.toString().padLeft(2, '0')}', style: TextStyle(fontSize: 14) ),
+
+    //期限内に開始できたらダイアモンド、そのひ開始できたらサムズアップ
+    //     SizedBox(height: 2,), Icon(status == cnsStatusHabitsDue ? Icons.diamond:Icons.thumb_up  , color: Colors.white, size: 16,), //日付と一緒に表示するアイコン
      ]
     ));
   }
@@ -153,18 +131,21 @@ MarkedDateMap作成
   void makeMarkedDateMap() async{
 
     DateTime dateTime= DateTime(0, 0, 0);
+    DateTime realTime= DateTime(0, 0, 0);
     String strStatus ;
     await _loadRireki();
-
 
     for (Map item in mapRireki){
       dateTime = DateTime( DateTime.parse(item['realtime'].toString
         ()).year,DateTime.parse(item['realtime'].toString()).month,DateTime.parse(item['realtime'].toString()).day);
       strStatus = item['status'].toString();
-      debugPrint('${DateTime.parse(item['realtime'].toString()).day}');
+      realTime  = DateTime.parse(item['realtime'].toString());
+      debugPrint( 'start:$realTime');
+     // debugPrint('${DateTime.parse(item['realtime'].toString()).day}');
+      debugPrint('${DateTime.parse(item['realtime'].toString()).hour} : ${DateTime.parse(item['realtime'].toString()).minute}');
       setState(() {
         markedDateMap.add(dateTime, new Event(
-            date: dateTime, icon: _getIcon(dateTime, strStatus))); //アイコンを作成
+            date: dateTime, icon: _getIcon(dateTime, strStatus,realTime))); //アイコンを作成
       });
     }
     //  dateTime = DateTime(2022, 12, 10);
@@ -173,15 +154,6 @@ MarkedDateMap作成
     // _markedDateMap.add(dateTime,new Event(date: dateTime, icon: _getIcon(dateTime,'1')));
     // dateTime = DateTime(2022, 12, 23);
     // _markedDateMap.add(dateTime,new Event(date: dateTime, icon: _getIcon(dateTime,'1')));
-    debugPrint('makeMarkedDateMap通過');
-  }
-  /*------------------------------------------------------------------
-履歴データロード
- -------------------------------------------------------------------*/
-  void init() async{
-    debugPrint('カレンダーinit開始');
-    makeMarkedDateMap();
-    debugPrint('カレンダーinit終了');
   }
 
 }

@@ -423,7 +423,7 @@ class _MyHomePageState extends State<MyHomePage> {
     String strNowDate = DateTime.now().toString();
     String strGoalTime;
     //比較用の変数
-    DateTime dtNowDate = DateTime.utc(0,0,0,DateTime.now().hour,DateTime.now().minute,0);
+    DateTime dtNowDate = DateTime.utc(2016,5,1,DateTime.now().hour,DateTime.now().minute,0);
     DateTime dtGoalTime;
 
     //ステータス

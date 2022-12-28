@@ -178,10 +178,10 @@ class _SettingScreenState extends State<SettingScreen> {
       _type = e;
       if(e == strCnsEveryDay){
         isEnable = false; //毎日・・・0
-        _saveStrSetting('mode', '0');
+        _saveStrSetting('mode', cnsModeEveryDay);
       }else{
         isEnable = true; //平日・・・1
-        _saveStrSetting('mode', '1');
+        _saveStrSetting('mode', cnsModeNormalDay);
       }
     });
 

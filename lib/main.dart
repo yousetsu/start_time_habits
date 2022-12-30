@@ -726,13 +726,13 @@ class _MyHomePageState extends State<MyHomePage> {
    // String timeString = dateFormat.format(now);
 
     setState(() => {
-      //if(todayHabitsStart == false){
+      if(todayHabitsStart == false){
         limitTime = '$minusFlg$intHour時間　$intMinute分　$intSecond秒'
-      // }else{
-      //   limitTime = '既に習慣開始済み'
-      // }
+       }else{
+         limitTime = '既に習慣開始済み'
+       }
     });
-    debugPrint('limitTime:$limitTime');
+
   }
   /*------------------------------------------------------------------
 本日既に習慣を開始したかどうかを判定する

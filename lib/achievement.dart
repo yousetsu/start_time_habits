@@ -63,8 +63,8 @@ class _AchievementScreenState extends State<AchievementScreen> {
             border: Border(bottom: BorderSide(width: 1.0, color: Colors.grey))),
         child: ListTile(
             title:  Row(children:  <Widget>[
-              Expanded(child:  Text('No', style:  const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))),
-              Expanded(child:  Text('title', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))),
+              Text('No       ', style:  const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              Text('称号タイトル', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
             ])));
   }
   void getItems() async {
@@ -90,8 +90,8 @@ class _AchievementScreenState extends State<AchievementScreen> {
         // leading: (item['getupstatus'].toString() == cnsGetupStatusS)
         //     ? const Icon(Icons.thumb_up)
         //     : const Icon(Icons.redo),
-        title:Text('      ${item['No']}             ${item['title']}',
-          style:  TextStyle(color: boolAchieveReleaseFlg ? Colors.white : Colors.grey,fontSize: 20),),
+        title:Text('${item['No']}        ${item['title']}',
+          style:  TextStyle(color: boolAchieveReleaseFlg ? Colors.white : Colors.grey,fontSize: 12),),
         dense: true,
           selected: listNo == item['No'],
           onTap: () {
@@ -142,17 +142,17 @@ class _AchievementScreenState extends State<AchievementScreen> {
     if(intComboNum > 0){
       strContent ='$strBody \n\n <達成条件>\n 習慣連続実行回数　$intComboNum回以上\n ';
     }
-    if(intComboNum > 0){
-      strContent ='$intDueNum \n\n <達成条件>\n 目標時間内に実行した回数　$intDueNum回以上\n ';
+    if(intDueNum > 0){
+      strContent ='$strBody \n\n <達成条件>\n 目標時間内に実行した回数　$intDueNum回以上\n ';
     }
     if(intCombodueNum > 0){
-      strContent ='$intCombodueNum \n\n <達成条件>\n 目標時間内に実行した連続回数　$intCombodueNum回以上\n ';
+      strContent ='$strBody \n\n <達成条件>\n 目標時間内に実行した連続回数　$intCombodueNum回以上\n ';
     }
     showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-          title:  Text(strTitle),
-          content: Text(strContent),
+          title:  Text(strTitle,style:  TextStyle( fontSize: 18)),
+          content: Text(strContent,style:  TextStyle( fontSize: 12)),
           actions: <Widget>[
             TextButton(
                 child: Text('閉じる'),

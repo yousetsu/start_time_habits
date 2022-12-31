@@ -205,7 +205,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     init();
-
     Timer.periodic(Duration(seconds: 1), _onTimer);
   }
   @override
@@ -229,74 +228,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ],
                   ),
                 ),
-                Container(
-                  margin: const EdgeInsets.all(10.0),
-                  padding: const EdgeInsets.all(10.0),
-                  alignment: Alignment.bottomCenter,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.lightBlueAccent),
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.lightBlueAccent,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children:  <Widget>[
-                      Text('習慣実行回数',style:TextStyle(fontSize: 20.0)),
-                      Text('$intNum回',style:TextStyle(fontSize: 20.0))
-                    ],
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.all(10.0),
-                  padding: const EdgeInsets.all(10.0),
-                  alignment: Alignment.bottomCenter,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.lightBlueAccent),
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.lightBlueAccent,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children:  <Widget>[
-                      Text('習慣連続実行回数',style:TextStyle(fontSize: 20.0)),
-                      Text('$intComboNum回',style:TextStyle(fontSize: 20.0))
-                    ],
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.all(10.0),
-                  padding: const EdgeInsets.all(10.0),
-                  alignment: Alignment.bottomCenter,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.lightBlueAccent),
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.lightBlueAccent,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children:  <Widget>[
-                      Text('開始時間前に始めた回数',style:TextStyle(fontSize: 20.0)),
-                      Text('$intDueNum回',style:TextStyle(fontSize: 20.0))
-                    ],
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.all(10.0),
-                  padding: const EdgeInsets.all(10.0),
-                  alignment: Alignment.bottomCenter,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.lightBlueAccent),
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.lightBlueAccent,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children:  <Widget>[
-                      Text('開始時間前に始めた連続回数',style:TextStyle(fontSize: 20.0)),
-                      Text('$intComboDueNum回',style:TextStyle(fontSize: 20.0))
-                    ],
-                  ),
-                ),
+
                 SizedBox(
                   width: 200, height: 70,
                   child: ElevatedButton(
@@ -305,6 +237,38 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Text( todayHabitsStart?'済':'習慣開始', style: const TextStyle(fontSize: 35.0, color: Colors.white,),),
                   ),
                 ),
+
+
+
+                Container(
+                  margin: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(10.0),
+                  alignment: Alignment.bottomCenter,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.lightBlueAccent),
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.lightBlueAccent,
+                  ),
+                  child: Column(
+
+
+
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children:  <Widget>[
+                       Row(
+                  children:  <Widget>[
+                           Text('実績',style:TextStyle(fontSize: 20.0)),Text('実績2',style:TextStyle(fontSize: 20.0)),
+                      ],),
+
+                      Text('習慣開始　　$intNum回',style:TextStyle(fontSize: 20.0)),
+                      Text('現在　$intComboNum日継続中',style:TextStyle(fontSize: 20.0)),
+                      Text('',),
+                      Text('目標時間内に開始　$intDueNum回',style:TextStyle(fontSize: 20.0)),
+                      Text('現在　$intComboDueNum日継続中',style:TextStyle(fontSize: 20.0))
+                    ],
+                  ),
+                ),
+
               ]
           )
       ),
@@ -350,6 +314,7 @@ class _MyHomePageState extends State<MyHomePage> {
         case 'Yes':
           todayHabitsStart = true;
           //履歴・習慣状況テーブルに更新
+        debugPrint("習慣開始はい押下");
           //アチーブメント判定・表示、データ登録
           saveRirekiHabitsData();
           break;
@@ -404,13 +369,20 @@ class _MyHomePageState extends State<MyHomePage> {
  -------------------------------------------------------------------*/
   Future<String?> _loadStrRireki(String field) async{
     String? strValue = "";
+    debugPrint('getDatabasesPath');
     String dbPath = await getDatabasesPath();
     String path = p.join(dbPath, 'rireki.db');
+    debugPrint('openDatabase');
+    debugPrint('path:$path');
     Database database = await openDatabase(path, version: 1);
+    debugPrint('database.rawQuery');
     List<Map> result = await database.rawQuery("SELECT $field From (SELECT $field From rireki order by realtime desc ) limit 1");
+    debugPrint('Map item in result');
     for (Map item in result) {
+      debugPrint('strValue:$strValue');
       strValue = item[field].toString();
     }
+    debugPrint('database.close()');
     await database.close();
     return strValue;
 
@@ -438,9 +410,11 @@ class _MyHomePageState extends State<MyHomePage> {
     String? strPreStatus;
 
     //履歴テーブルから直前の時刻を取得
+    debugPrint('履歴テーブルから直前の時刻を取得');
     strPreRealTime = await _loadStrRireki('realtime') ;
 
     //履歴テーブルから直前のステータスを取得
+    debugPrint('履歴テーブルから直前のステータスを取得');
     strPreStatus = await _loadStrRireki('status') ;
 
     //習慣状況テーブルにデータ保存
@@ -498,6 +472,7 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {intRestart++;});
     }
     //習慣テーブルにアップデート
+    debugPrint('習慣テーブルにアップデート');
     String strHapitsPath = p.join(dbPath, 'internal_assets.db');
     Database database = await openDatabase(strHapitsPath, version: 1,
         onCreate: (Database db, int version) async {
@@ -513,6 +488,7 @@ class _MyHomePageState extends State<MyHomePage> {
     database.close();
 
     //履歴テーブルに登録
+    debugPrint('履歴テーブルに登録');
     String path = p.join(dbPath, 'rireki.db');
      database = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
@@ -537,18 +513,16 @@ class _MyHomePageState extends State<MyHomePage> {
     bool boolAchievementFlg = false;
     bool boolAlreadyAchieveFlg = false;
 
-    for (Map item in achievementMapList)
-    {
+    for (Map item in achievementMapList) {
       boolAlreadyAchieveFlg = false;
-      boolAchievementFlg = false;
 
       //既にアチーブメント達成してたら除外
-      for (Map serchAchMap in achievementUserMap){
-       if( item['No'] == serchAchMap['No']){
-         boolAlreadyAchieveFlg = true;
-       }
+      for (Map serchAchMap in achievementUserMap) {
+        if (item['No'] == serchAchMap['No']) {
+          boolAlreadyAchieveFlg = true;
+        }
       }
-      if(boolAlreadyAchieveFlg){
+      if (boolAlreadyAchieveFlg) {
         //既に称号を獲得していたら次へ
         continue;
       }
@@ -558,60 +532,64 @@ class _MyHomePageState extends State<MyHomePage> {
       // }
 
       //アチーブメント判定
-      if(item['num'] != 0 && item['num'] <= intNum){
+      debugPrint('アチーブメント判定');
+      if (item['num'] != 0 && item['num'] <= intNum) {
         boolAchievementFlg = true;
-        strNo    = item['No'];
+        strNo = item['No'];
         strTitle = item['title'];
-        strContent ='$strTitle \n\n <達成条件>\n 習慣実行回数　${item['num']}回以上\n ';
+        strContent = '$strTitle \n\n <達成条件>\n 習慣実行回数　${item['num']}回以上\n ';
+        debugPrint('No:$strNo title:$strTitle content:$strContent');
       }
-      if(item['combo_num'] != 0 && item['combo_num'] <= intComboNum){
+      if (item['combo_num'] != 0 && item['combo_num'] <= intComboNum) {
         boolAchievementFlg = true;
-        strNo    = item['No'];
+        strNo = item['No'];
         strTitle = item['title'];
-        strContent ='$strTitle \n\n <達成条件>\n 習慣連続実行回数　${item['combo_num']}回以上\n ';
-
+        strContent =
+        '$strTitle \n\n <達成条件>\n 習慣連続実行回数　${item['combo_num']}回以上\n ';
+        debugPrint('No:$strNo title:$strTitle content:$strContent');
       }
-      if(item['due_num'] != 0 && item['due_num'] <= intDueNum){
+      if (item['due_num'] != 0 && item['due_num'] <= intDueNum) {
         boolAchievementFlg = true;
-        strNo    = item['No'];
+        strNo = item['No'];
         strTitle = item['title'];
-        strContent ='$strTitle \n\n <達成条件>\n 目標時間内に実行した回数　${item['due_num']}回以上\n ';
+        strContent =
+        '$strTitle \n\n <達成条件>\n 目標時間内に実行した回数　${item['due_num']}回以上\n ';
+        debugPrint('No:$strNo title:$strTitle content:$strContent');
       }
-      if(item['combodue_num'] != 0 && item['combodue_num'] <= intComboDueNum){
+      if (item['combodue_num'] != 0 && item['combodue_num'] <= intComboDueNum) {
         boolAchievementFlg = true;
-        strNo    = item['No'];
+        strNo = item['No'];
         strTitle = item['title'];
-        strContent ='$strTitle \n\n <達成条件>\n 目標時間内に実行した連続回数　${item['combodue_num']}回以上\n ';
+        strContent =
+        '$strTitle \n\n <達成条件>\n 目標時間内に実行した連続回数　${item['combodue_num']}回以上\n ';
+        debugPrint('No:$strNo title:$strTitle content:$strContent');
       }
     }
     //アチーブメントダイアログ表示（共通）
-    if(boolAchievementFlg){
-      showDialog(
-          context: context,
-          builder: (BuildContext context) => AlertDialog(
-            title:  Text('称号獲得！'),
-            content: Text(strContent),
-            actions: <Widget>[
-              TextButton(
-                  child: Text('閉じる'),
-                  onPressed: () => Navigator.pop<String>(context, 'Yes')),
-            ],
-          ));
-
-    //アチーブメントユーザーマスタに登録
-    path = p.join(dbPath, 'achievement.db');
-    database = await openDatabase(path, version: 1,
-        onCreate: (Database db, int version) async {
+      if(boolAchievementFlg){
+        showDialog(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title:  Text('称号獲得！'),
+              content: Text(strContent),
+              actions: <Widget>[
+                TextButton(child: Text('閉じる'), onPressed: () => Navigator.pop<String>(context, 'Yes')),
+              ],
+            ));
+        //アチーブメントユーザーマスタに登録
+        path = p.join(dbPath, 'achievement.db');
+        database = await openDatabase(path, version: 1,
+            onCreate: (Database db, int version) async {
           await db.execute(strCnsSqlCreateAchievement);
         });
-    query = 'INSERT INTO achievement_user(No,kaku1,kaku2,kaku3,kaku4) values("$strNo",null,null,null,null)';
-    await database.transaction((txn) async {
+        query = 'INSERT INTO achievement_user(No,kaku1,kaku2,kaku3,kaku4) values("$strNo",null,null,null,null)';
+        await database.transaction((txn) async {
 //      int id = await txn.rawInsert(query);
-      await txn.rawInsert(query);
+          await txn.rawInsert(query);
       //   print("insert: $id");
-    });
-    await database.close();
-    }
+        });
+        await database.close();
+      }
 
     ///明日の通知分をセット
     //そもそも通知制御しないのであれば通知セットしない
@@ -676,7 +654,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onTimer(Timer timer) {
 
     String  strGoalTime;
-    debugPrint('strMode:$strMode');
+ //   debugPrint('strMode:$strMode');
     if (strMode == cnsModeEveryDay){
       strGoalTime = everyTime.toString();
     }else{
@@ -701,9 +679,9 @@ class _MyHomePageState extends State<MyHomePage> {
     int diffSecond;
     diffSecond = goalTime.difference(nowTime).inSeconds;
 
-    debugPrint('goalTime:$goalTime');
-    debugPrint('nowTime:$nowTime');
-    debugPrint('diffSecond:$diffSecond');
+    // debugPrint('goalTime:$goalTime');
+    // debugPrint('nowTime:$nowTime');
+    // debugPrint('diffSecond:$diffSecond');
 
     int intHour;
     int intHourAmariSec;
@@ -747,9 +725,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if(strPreRealTime != null){
       dtPreRealTime = DateTime.parse(strPreRealTime);
-      debugPrint(' todayHabitsStart1 $todayHabitsStart');
-      debugPrint(' dtPreRealTime ${dtPreRealTime.year} ${dtPreRealTime.month} ${dtPreRealTime.day})');
-      debugPrint(' dtNowDate ${dtNowDate.year} ${dtNowDate.month} ${dtNowDate.day})');
+      // debugPrint(' todayHabitsStart1 $todayHabitsStart');
+      // debugPrint(' dtPreRealTime ${dtPreRealTime.year} ${dtPreRealTime.month} ${dtPreRealTime.day})');
+      // debugPrint(' dtNowDate ${dtNowDate.year} ${dtNowDate.month} ${dtNowDate.day})');
       if(dtNowDate.year == dtPreRealTime.year
           && dtNowDate.month == dtPreRealTime.month
           && dtNowDate.day == dtPreRealTime.day){
@@ -762,7 +740,7 @@ class _MyHomePageState extends State<MyHomePage> {
         todayHabitsStart = false
       });
     }
-    debugPrint(' todayHabitsStart2 $todayHabitsStart');
+ //   debugPrint(' todayHabitsStart2 $todayHabitsStart');
   }
   Future<void> setLocalNotification() async {
 
@@ -847,6 +825,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void init() async {
   await  loadPref();
   await  loadSetting();
+
   await  judgeTodayStartTime();
   await  setLocalNotification();
   }

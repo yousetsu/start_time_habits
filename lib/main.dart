@@ -162,9 +162,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        primaryColor: const Color(0xFF2196f3),
+        //primaryColor: const Color(0xFF2196f3),
+        primaryColor: Colors.blue,
         hintColor: const Color(0xFF2196f3),
-        canvasColor: const Color(0xFF515254),
+        canvasColor: Colors.white,
+      //  canvasColor: const Color(0xFF515254),
         colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue).copyWith(secondary: const Color(0xFF2196f3)),
       ),
       initialRoute: '/',
@@ -199,8 +201,16 @@ class _MyHomePageState extends State<MyHomePage> {
   DateTime notificationTime = DateTime.utc(0, 0, 0);
   String firstSet = '0';
 
+  String limitTimeText = '';
   String limitTime = '';
   bool todayHabitsStart = false; //本日の習慣開始ボタンを押したか？
+  DateTime goalTimeParse = DateTime.utc(0, 0, 0);
+
+  String strGoalTime = '';
+
+  DateTime dtNowDate = DateTime.utc(0, 0, 0);
+
+
   @override
   void initState() {
     super.initState();
@@ -210,21 +220,23 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('勉強時間アラーム')),
+      appBar: AppBar(title: const Text('はじめる習慣')),
       body: SingleChildScrollView(
           child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children:  <Widget>[
                 Container(
-                    margin: const EdgeInsets.all(10.0),
-                    padding: const EdgeInsets.all(40.0),
+                    margin: const EdgeInsets.all(25.0),
+                    padding: const EdgeInsets.all(20.0),
                     alignment: Alignment.bottomCenter,
-                  decoration: BoxDecoration(border: Border.all(color: Colors.lightBlueAccent), borderRadius: BorderRadius.circular(10), color: Colors.lightBlueAccent,),
+                  decoration: BoxDecoration(border: Border.all(color: Colors.blue), borderRadius: BorderRadius.circular(10), color: Colors.blue,),
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children:   <Widget>[
-                        Text('習慣開始まで',style:TextStyle(fontSize: 20.0)),
-                        Text(limitTime.toString(),style:TextStyle(fontSize: 20.0))
+                        Text('本日の目標開始時間',style:TextStyle(color: Colors.white,fontSize: 20.0)),
+                        Text( '${goalTimeParse.hour.toString().padLeft(2, '0')}:${goalTimeParse.minute.toString().padLeft(2, '0')}',style:TextStyle(color: Colors.white,fontSize: 40.0)),
+                        Text(limitTimeText.toString(),style:TextStyle(color: Colors.white,fontSize: 20.0)),
+                        Text(limitTime.toString(),style:TextStyle(color: Colors.white,fontSize: 40.0))
                       ],
                   ),
                 ),
@@ -234,37 +246,37 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(foregroundColor: Colors.white, backgroundColor:todayHabitsStart?Colors.grey:primaryColor, shape: const StadiumBorder(), elevation: 16,),
                     onPressed: todayHabitsStart?null:buttonPressed,
-                    child: Text( todayHabitsStart?'済':'習慣開始', style: const TextStyle(fontSize: 35.0, color: Colors.white,),),
+                    child: Text( todayHabitsStart?'済':'習慣開始', style: const TextStyle(fontSize: 30.0, color: Colors.white,),),
                   ),
                 ),
 
-
-
                 Container(
-                  margin: const EdgeInsets.all(10.0),
-                  padding: const EdgeInsets.all(10.0),
+                  margin: const EdgeInsets.all(25.0),
+                  padding: const EdgeInsets.all(20.0),
                   alignment: Alignment.bottomCenter,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.lightBlueAccent),
+                    border: Border.all(color: Colors.blue),
                     borderRadius: BorderRadius.circular(10),
-                    color: Colors.lightBlueAccent,
+                    color: Colors.blue,
                   ),
                   child: Column(
 
-
-
                     mainAxisAlignment: MainAxisAlignment.center,
                     children:  <Widget>[
-                       Row(
-                  children:  <Widget>[
-                           Text('実績',style:TextStyle(fontSize: 20.0)),Text('実績2',style:TextStyle(fontSize: 20.0)),
-                      ],),
+                      Row(children:  <Widget>[Icon(Icons.toc,color: Colors.white,), Text('実績',style:TextStyle(fontSize: 25.0,color: Colors.white),),],),
 
-                      Text('習慣開始　　$intNum回',style:TextStyle(fontSize: 20.0)),
-                      Text('現在　$intComboNum日継続中',style:TextStyle(fontSize: 20.0)),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children:  <Widget>[
+                            Text('習慣開始    ',style:TextStyle(fontSize: 20.0,color: Colors.white)),
+                            Text('$intNum',style:TextStyle(fontSize: 40.0,color: Colors.white)),
+                            Text('    回',style:TextStyle(fontSize: 20.0,color: Colors.white)),
+                          ]),
+
+                      Text('現在　$intComboNum日継続中',style:TextStyle(fontSize: 20.0,color: Colors.white)),
                       Text('',),
-                      Text('目標時間内に開始　$intDueNum回',style:TextStyle(fontSize: 20.0)),
-                      Text('現在　$intComboDueNum日継続中',style:TextStyle(fontSize: 20.0))
+                      Text('目標時間内に開始　$intDueNum回',style:TextStyle(fontSize: 20.0,color: Colors.white)),
+                      Text('現在　$intComboDueNum日継続中',style:TextStyle(fontSize: 20.0,color: Colors.white))
                     ],
                   ),
                 ),
@@ -394,9 +406,14 @@ class _MyHomePageState extends State<MyHomePage> {
   void saveRirekiHabitsData() async {
     String strNowDate = DateTime.now().toString();
     String strGoalTime;
+
     //比較用の変数
-    DateTime dtNowDate = DateTime.utc(2016,5,1,DateTime.now().hour,DateTime.now().minute,0);
+    DateTime dtNowDateVs = DateTime.utc(2016,5,1,dtNowDate.hour,dtNowDate.minute,0);
     DateTime dtGoalTime;
+
+    //現在日時を退避
+    dtNowDate = DateTime.parse(strNowDate.toString());
+
 
     //ステータス
     String strStatus = cnsStatusHabits; //習慣を実行
@@ -440,7 +457,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //ステータス判定
     //現在時刻が、目標時間以内だったら期限内実成功
     // 目標時間　>　現在時間
-    if(dtGoalTime.isAfter(dtNowDate)) {
+    if(dtGoalTime.isAfter(dtNowDateVs)) {
       strStatus = cnsStatusHabitsDue; //習慣を期限内に実行
     }
 
@@ -449,7 +466,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     //直前の日時が1日前だったら、連続実行回数をカウントアップ
     DateTime dtPreRealTime =  DateTime.parse(strPreRealTime.toString());
-    DateTime dtNowDateYest = dtNowDate.add(const Duration(days: -1));
+    DateTime dtNowDateYest = dtNowDateVs.add(const Duration(days: -1));
 
     if(dtPreRealTime.isAtSameMomentAs(dtNowDateYest)){
       setState(() {intComboNum++;});
@@ -651,6 +668,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return result;
 
   }
+  /*------------------------------------------------------------------
+リアルタイムカウントダウン
+ -------------------------------------------------------------------*/
   void _onTimer(Timer timer) {
 
     String  strGoalTime;
@@ -705,9 +725,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
     setState(() => {
       if(todayHabitsStart == false){
+        limitTimeText = '習慣開始まであと',
         limitTime = '$minusFlg$intHour時間　$intMinute分　$intSecond秒'
        }else{
-         limitTime = '既に習慣開始済み'
+         limitTimeText = '既に習慣開始済み',
+        limitTime = '${dtNowDate.hour.toString().padLeft(2,'0')}:${dtNowDate.minute.toString().padLeft(2,'0')}'
        }
     });
 
@@ -758,22 +780,8 @@ class _MyHomePageState extends State<MyHomePage> {
       debugPrint('既に通知がセットされているのであればローカル通知セットしない');
       return;
     }
-    //タイマー時間算出
-    String  strGoalTime;
-    if (strMode == cnsModeEveryDay){
-      strGoalTime = everyTime.toString();
-    }else{
-      //土日の場合
-      if (DateTime.now().weekday == 6 || DateTime.now().weekday == 7) {
-        strGoalTime = holidayTime.toString();
-      }
-      //平日の場合
-      else {
-        strGoalTime = normalTime.toString();
-      }
-    }
 
-    DateTime goalTimeParse = DateTime.parse(strGoalTime.toString());
+
     /// 現在時刻のみを取得する
     DateTime nowTime = DateTime(2022,12,10,DateTime.now().hour,DateTime.now().minute,DateTime.now().second);
 
@@ -820,12 +828,36 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
   /*------------------------------------------------------------------
+Goaltimeの算出
+ -------------------------------------------------------------------*/
+  Future<void> calGoaltime() async {
+    //タイマー時間算出
+
+    if (strMode == cnsModeEveryDay) {
+      strGoalTime = everyTime.toString();
+    } else {
+      //土日の場合
+      if (DateTime
+          .now()
+          .weekday == 6 || DateTime
+          .now()
+          .weekday == 7) {
+        strGoalTime = holidayTime.toString();
+      }
+      //平日の場合
+      else {
+        strGoalTime = normalTime.toString();
+      }
+    }
+     goalTimeParse = DateTime.parse(strGoalTime.toString());
+  }
+  /*------------------------------------------------------------------
 初期処理
  -------------------------------------------------------------------*/
   void init() async {
   await  loadPref();
   await  loadSetting();
-
+  await  calGoaltime();
   await  judgeTodayStartTime();
   await  setLocalNotification();
   }

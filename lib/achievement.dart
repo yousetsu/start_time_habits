@@ -137,16 +137,16 @@ class _AchievementScreenState extends State<AchievementScreen> {
       }
 
     if(intNum > 0){
-      strContent ='$strBody \n\n <達成条件>\n 習慣実行回数　$intNum回以上\n ';
+      strContent ='$strBody \n\n <達成条件>\n 習慣開始　$intNum回以上\n ';
     }
     if(intComboNum > 0){
-      strContent ='$strBody \n\n <達成条件>\n 習慣連続実行回数　$intComboNum回以上\n ';
+      strContent ='$strBody \n\n <達成条件>\n 習慣開始継続　$intComboNum日以上\n ';
     }
     if(intDueNum > 0){
-      strContent ='$strBody \n\n <達成条件>\n 目標時間内に実行した回数　$intDueNum回以上\n ';
+      strContent ='$strBody \n\n <達成条件>\n 目標時間内に開始　$intDueNum回以上\n ';
     }
     if(intCombodueNum > 0){
-      strContent ='$strBody \n\n <達成条件>\n 目標時間内に実行した連続回数　$intCombodueNum回以上\n ';
+      strContent ='$strBody \n\n <達成条件>\n 目標時間内に開始　$intCombodueNum日以上\n ';
     }
     showDialog(
         context: context,

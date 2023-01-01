@@ -726,7 +726,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() => {
       if(todayHabitsStart == false){
         limitTimeText = '習慣開始まであと',
-        limitTime = '$minusFlg$intHour時間　$intMinute分　$intSecond秒'
+        limitTime = '$minusFlg ${intHour.toString()}:${intMinute.toString().padLeft(2,'0')}:${intSecond.toString().padLeft(2,'0')}'
        }else{
          limitTimeText = '既に習慣開始済み',
         limitTime = '${dtNowDate.hour.toString().padLeft(2,'0')}:${dtNowDate.minute.toString().padLeft(2,'0')}'

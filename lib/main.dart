@@ -287,10 +287,10 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 0,
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(label:'ホーム', icon: Icon(Icons.home)),
-          BottomNavigationBarItem(label:'習慣状況', icon: Icon(Icons.calendar_month)),
-          BottomNavigationBarItem(label:'設定', icon: Icon(Icons.settings)),
-          BottomNavigationBarItem(label:'称号', icon: Icon(Icons.emoji_events)),
+          BottomNavigationBarItem(label:'ホーム', icon: Icon(Icons.home),backgroundColor: Colors.blue	),
+          BottomNavigationBarItem(label:'習慣状況', icon: Icon(Icons.calendar_month),backgroundColor: Colors.blue),
+          BottomNavigationBarItem(label:'設定', icon: Icon(Icons.settings),backgroundColor: Colors.blue),
+          BottomNavigationBarItem(label:'称号', icon: Icon(Icons.emoji_events),backgroundColor: Colors.blue),
         ],
         onTap: (int index) {
           if (index == 1) {
@@ -726,7 +726,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() => {
       if(todayHabitsStart == false){
         limitTimeText = '習慣開始まであと',
-        limitTime = '$minusFlg$intHour時間　$intMinute分　$intSecond秒'
+        limitTime = '$minusFlg ${intHour.toString()}:${intMinute.toString().padLeft(2,'0')}:${intSecond.toString().padLeft(2,'0')}'
        }else{
          limitTimeText = '既に習慣開始済み',
         limitTime = '${dtNowDate.hour.toString().padLeft(2,'0')}:${dtNowDate.minute.toString().padLeft(2,'0')}'

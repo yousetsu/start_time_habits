@@ -65,10 +65,10 @@ class _HabitsScreenState extends State<HabitsScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 1,
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(label:'ホーム', icon: Icon(Icons.home)),
-          BottomNavigationBarItem(label:'習慣状況', icon: Icon(Icons.calendar_month)),
-          BottomNavigationBarItem(label:'設定', icon: Icon(Icons.settings)),
-          BottomNavigationBarItem(label:'称号', icon: Icon(Icons.emoji_events)),
+          BottomNavigationBarItem(label:'ホーム', icon: Icon(Icons.home),backgroundColor: Colors.blue),
+          BottomNavigationBarItem(label:'習慣状況', icon: Icon(Icons.calendar_month),backgroundColor: Colors.blue),
+          BottomNavigationBarItem(label:'設定', icon: Icon(Icons.settings),backgroundColor: Colors.blue),
+          BottomNavigationBarItem(label:'称号', icon: Icon(Icons.emoji_events),backgroundColor: Colors.blue),
         ],
         onTap: (int index) {
           if (index == 0) {

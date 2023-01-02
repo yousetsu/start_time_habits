@@ -214,7 +214,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children:  <Widget>[
-                Padding(padding: EdgeInsets.all(20)),
+                Padding(padding: EdgeInsets.all(10)),
                       Container(
                         margin: const EdgeInsets.fromLTRB(25,0,25,10),
                         padding: const EdgeInsets.fromLTRB(0,10,0,10),
@@ -227,7 +227,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children:   <Widget>[
-                                Text('目標時間',style:TextStyle(color: Colors.white,fontSize: 20.0)),
+                                Text('         目標時間         ',style:TextStyle(color: Colors.white,fontSize: 20.0)),
                                 Text( '${goalTimeParse.hour.toString().padLeft(2, '0')}:${goalTimeParse.minute.toString().padLeft(2, '0')}',style:TextStyle(color: Colors.white,fontSize: 40.0,fontWeight: FontWeight.w600)),
                                 Text(limitTimeText.toString(),style:TextStyle(color: Colors.white,fontSize: 20.0,)),
                                 Text(limitTime.toString(),style:TextStyle(color: Colors.white,fontSize: 40.0,fontWeight: FontWeight.w600))
@@ -245,17 +245,17 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Text( todayHabitsStart?'済':'習慣開始', style: const TextStyle(fontSize: 30.0, color: Colors.white,),),
                   ),
                 ),
-                Padding(padding: EdgeInsets.all(10)),
+                Padding(padding: EdgeInsets.all(5)),
                 ///習慣開始数
                 Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children:  <Widget>[
                      // Icon(Icons.pending_actions),
-                      Text('はじめた回数',style:TextStyle(fontSize: 20.0,color: Colors.black,fontWeight: FontWeight.w500)),
+                      Text('はじめた回数',style:TextStyle(fontSize: 18.0,color: Colors.black,fontWeight: FontWeight.w500)),
                     ]),
                 Container(
                   margin: const EdgeInsets.fromLTRB(25,0,25,0),
-                  padding: const  EdgeInsets.fromLTRB(0,10,0,10),
+                  padding: const  EdgeInsets.fromLTRB(0,5,0,5),
                   alignment: Alignment.bottomCenter,
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.blue),
@@ -272,7 +272,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children:  <Widget>[
-                                Text('$intNum',style:TextStyle(fontSize: 40.0,color: Colors.white,fontWeight: FontWeight.w700)),
+                                Text('$intNum',style:TextStyle(fontSize: 35.0,color: Colors.white,fontWeight: FontWeight.w700)),
                                 Text('    回',style:TextStyle(fontSize: 20.0,color: Colors.white)),
                               ]),
                           Text('$intComboNum 日継続中',style:TextStyle(fontSize: 20.0,color: Colors.white ,fontWeight: FontWeight.w500)),
@@ -281,17 +281,17 @@ class _MyHomePageState extends State<MyHomePage> {
                         SizedBox(width: 100, height: 50),
                       ],),
                 ),
-                Padding(padding: EdgeInsets.all(10)),
+                Padding(padding: EdgeInsets.all(5)),
                 Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children:  <Widget>[
                      // Icon(Icons.pending_actions),
-                      Text('目標時間前にはじめた回数',style:TextStyle(fontSize: 20.0,color: Colors.black)),
+                      Text('目標時間前にはじめた回数',style:TextStyle(fontSize: 18.0,color: Colors.black)),
                     ]),
                 ///目標時間内に開始
                 Container(
                   margin: const EdgeInsets.fromLTRB(25,0,25,0),
-                  padding: const EdgeInsets.all(10.0),
+                  padding:  const  EdgeInsets.fromLTRB(0,5,0,5),
                   alignment: Alignment.bottomCenter,
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.blue),
@@ -308,7 +308,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children:  <Widget>[
-                                  Text('$intDueNum',style:TextStyle(fontSize: 40.0,color: Colors.white)),
+                                  Text('$intDueNum',style:TextStyle(fontSize: 35.0,color: Colors.white)),
                                   Text('    回',style:TextStyle(fontSize: 20.0,color: Colors.white)),
                                 ]),
                             Text('$intComboDueNum 日継続中',style:TextStyle(fontSize: 20.0,color: Colors.white))
@@ -318,8 +318,36 @@ class _MyHomePageState extends State<MyHomePage> {
                       ],
                   ),
                 ),
-                Text('習慣を再開 $intRestart 回',style:TextStyle(fontSize: 20.0,color: Colors.black)),
-
+                Padding(padding: EdgeInsets.all(5)),
+                Text('習慣を再開',style:TextStyle(fontSize: 18.0,color: Colors.black)),
+                Container(
+                  margin: const EdgeInsets.fromLTRB(25,0,25,0),
+                  padding:  const  EdgeInsets.fromLTRB(0,5,0,5),
+                  alignment: Alignment.bottomCenter,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.blue),
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.blue,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children:  <Widget>[
+                      SizedBox(width: 100, height: 50,child:Icon(Icons.sunny_snowing,size: 40,color: Colors.white,)),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children:  <Widget>[
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children:  <Widget>[
+                                Text('  $intRestart',style:TextStyle(fontSize: 35.0,color: Colors.white)),
+                                Text('    回   ',style:TextStyle(fontSize: 20.0,color: Colors.white)),
+                              ]),
+                        ],
+                      ),
+                      SizedBox(width: 100, height: 50),
+                    ],
+                  ),
+                ),
               ]
           )
       ),

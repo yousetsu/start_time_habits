@@ -318,6 +318,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       ],
                   ),
                 ),
+                Text('習慣を再開 $intRestart 回',style:TextStyle(fontSize: 20.0,color: Colors.black)),
+
               ]
           )
       ),
@@ -390,6 +392,7 @@ class _MyHomePageState extends State<MyHomePage> {
          intComboDueNum = item['combodue_num'];
          intRestart = item['restart'];
          debugPrint('継続日数:$intComboNum');
+         debugPrint('リスタート数:$intRestart');
        });
     }
   //  await database.close();
@@ -596,7 +599,7 @@ class _MyHomePageState extends State<MyHomePage> {
         boolAchievementFlg = true;
         strNo = item['No'];
         strTitle = item['title'];
-        strContent = '$strTitle \n\n <達成条件>\n 習慣実行回数　${item['num']}回以上\n ';
+        strContent = '$strTitle \n\n <達成条件>\n 習慣をはじめた回数　${item['num']}回以上\n ';
         debugPrint('No:$strNo title:$strTitle content:$strContent');
       }
       if (item['combo_num'] != 0 && item['combo_num'] <= intComboNum) {
@@ -604,7 +607,7 @@ class _MyHomePageState extends State<MyHomePage> {
         strNo = item['No'];
         strTitle = item['title'];
         strContent =
-        '$strTitle \n\n <達成条件>\n 習慣連続実行回数　${item['combo_num']}回以上\n ';
+        '$strTitle \n\n <達成条件>\n 習慣をはじめた継続日数　${item['combo_num']}回以上\n ';
         debugPrint('No:$strNo title:$strTitle content:$strContent');
       }
       if (item['due_num'] != 0 && item['due_num'] <= intDueNum) {
@@ -612,7 +615,7 @@ class _MyHomePageState extends State<MyHomePage> {
         strNo = item['No'];
         strTitle = item['title'];
         strContent =
-        '$strTitle \n\n <達成条件>\n 目標時間内に実行した回数　${item['due_num']}回以上\n ';
+        '$strTitle \n\n <達成条件>\n 目標時間内にはじめた回数　${item['due_num']}回以上\n ';
         debugPrint('No:$strNo title:$strTitle content:$strContent');
       }
       if (item['combodue_num'] != 0 && item['combodue_num'] <= intComboDueNum) {
@@ -620,7 +623,15 @@ class _MyHomePageState extends State<MyHomePage> {
         strNo = item['No'];
         strTitle = item['title'];
         strContent =
-        '$strTitle \n\n <達成条件>\n 目標時間内に実行した連続回数　${item['combodue_num']}回以上\n ';
+        '$strTitle \n\n <達成条件>\n 目標時間内にはじめた継続日数　${item['combodue_num']}回以上\n ';
+        debugPrint('No:$strNo title:$strTitle content:$strContent');
+      }
+      if (item['restart'] != 0 && item['restart'] <= intRestart) {
+        boolAchievementFlg = true;
+        strNo = item['No'];
+        strTitle = item['title'];
+        strContent =
+        '$strTitle \n\n <達成条件>\n リスタートした回数　${item['restart']}回以上\n ';
         debugPrint('No:$strNo title:$strTitle content:$strContent');
       }
     }
@@ -888,7 +899,7 @@ Goaltimeの算出
 初期処理
  -------------------------------------------------------------------*/
   void init() async {
-  //  await  testEditDB();
+ //   await  testEditDB();
   await  loadHabits();
   await  loadSetting();
   await  calGoaltime();
@@ -902,8 +913,8 @@ Goaltimeの算出
 
     String dbPath = '';
     String query = '';
+    ///履歴テーブル
     String path = p.join(dbPath, 'rireki.db');
-
     String? strId = '';
     strId = await _loadStrRireki('id');
 
@@ -912,13 +923,19 @@ Goaltimeの算出
           await db.execute(strCnsSqlCreateRireki);
         });
     query = 'Delete from rireki where id = $strId ';
-
-    // 'INSERT INTO rireki(goaltime,realtime, status,kaku1,kaku2,kaku3,kaku4) values("$strGoalTime","$strNowDate","$strStatus",null,null,null,null)';
     await database.transaction((txn) async {
-//      int id = await txn.rawInsert(query);
       await txn.rawInsert(query);
-      //   print("insert: $id");
     });
+///習慣テーブル更新
+//     String strHapitsPath = p.join(dbPath, 'internal_assets.db');
+//     Database databaseHapits = await openDatabase(strHapitsPath, version: 1,
+//         onCreate: (Database db, int version) async {
+//           await db.execute(strCnsSqlCreateRireki);
+//         });
+//      query = 'Update habits set restart = 0';
+//     await databaseHapits.transaction((txn) async {
+//       await txn.rawInsert(query);
+//     });
 
   }
 }

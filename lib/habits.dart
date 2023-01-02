@@ -6,14 +6,12 @@ import 'package:sqflite/sqflite.dart';
 import './const.dart';
 
 List<Map> mapRireki = <Map>[];
-
 EventList<Event> markedDateMap = new EventList<Event>(events: {});
 class HabitsScreen extends StatefulWidget {
   const HabitsScreen({Key? key}) : super(key: key); //コンストラクタ
   @override
   State<HabitsScreen> createState() => _HabitsScreenState();
 }
-
 class _HabitsScreenState extends State<HabitsScreen> {
   @override
   void initState()  {
@@ -27,12 +25,10 @@ class _HabitsScreenState extends State<HabitsScreen> {
       appBar: AppBar(title: const Text('習慣状況カレンダー')),
         body:SingleChildScrollView(
           child: Column(
-              //mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children:  <Widget>[
               Container(
-               // margin: const EdgeInsets.only(top:20, left:20),
                 child: CalendarCarousel<Event>(
                   //アイコンを表示する日付について、EventのList
                   markedDatesMap: markedDateMap,
@@ -47,7 +43,6 @@ class _HabitsScreenState extends State<HabitsScreen> {
           ),
 
         ),
-
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 1,
         items: const <BottomNavigationBarItem>[

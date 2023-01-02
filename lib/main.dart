@@ -227,8 +227,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
               children:  <Widget>[
                 Padding(padding: EdgeInsets.all(20)),
-
-
                       Container(
                         margin: const EdgeInsets.fromLTRB(25,0,25,10),
                         padding: const EdgeInsets.fromLTRB(0,10,0,10),
@@ -297,8 +295,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
                         SizedBox(width: 100, height: 50),
                       ],),
-
-
                 ),
                 Padding(padding: EdgeInsets.all(10)),
                 Row(
@@ -336,12 +332,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         SizedBox(width: 100, height: 50),
                       ],
                   ),
-
-
-
                 ),
-
-
               ]
           )
       ),

@@ -208,8 +208,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   String strGoalTime = '';
 
-  DateTime dtNowDate = DateTime.utc(0, 0, 0);
-
 
   @override
   void initState() {
@@ -458,9 +456,9 @@ class _MyHomePageState extends State<MyHomePage> {
 //   データベースにデータ保存
 //-------------------------------------------------------------
   void saveRirekiHabitsData() async {
-    String strNowDate = DateTime.now().toString();
+    String strNowDate = DateTime.now().toString();//ボタンを押下した時の時刻
     String strGoalTime;
-
+    DateTime dtNowDate = DateTime.parse(strNowDate.toString());
     //比較用の変数
     DateTime dtNowDateVs = DateTime.utc(2016,5,1,dtNowDate.hour,dtNowDate.minute,0);
     DateTime dtGoalTime;
@@ -468,7 +466,8 @@ class _MyHomePageState extends State<MyHomePage> {
     //現在日時を退避
     setState(() =>
     {
-      dtNowDate = DateTime.parse(strNowDate.toString())
+      limitTimeText = '既に習慣開始済み',
+      limitTime = '${dtNowDate.hour.toString().padLeft(2,'0')}:${dtNowDate.minute.toString().padLeft(2,'0')}',
     });
 
 
@@ -731,6 +730,10 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onTimer(Timer timer) {
 
     String  strGoalTime;
+    //既に習慣を開始済みなら実行しない
+    if (todayHabitsStart == true)
+      {return;}
+
     if (strMode == cnsModeEveryDay){
       strGoalTime = everyTime.toString();
     }else{
@@ -771,13 +774,8 @@ class _MyHomePageState extends State<MyHomePage> {
     intSecond = (intHourAmariSec % 60).floor();
 
     setState(() => {
-      if(todayHabitsStart == false){
         limitTimeText = '習慣開始まであと',
         limitTime = '$minusFlg ${intHour.toString()}:${intMinute.toString().padLeft(2,'0')}:${intSecond.toString().padLeft(2,'0')}'
-       }else{
-         limitTimeText = '既に習慣開始済み',
-        limitTime = '${dtNowDate.hour.toString().padLeft(2,'0')}:${dtNowDate.minute.toString().padLeft(2,'0')}'
-       }
     });
 
   }
@@ -794,13 +792,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if(strPreRealTime != null){
       dtPreRealTime = DateTime.parse(strPreRealTime);
-      // debugPrint(' todayHabitsStart1 $todayHabitsStart');
-      // debugPrint(' dtPreRealTime ${dtPreRealTime.year} ${dtPreRealTime.month} ${dtPreRealTime.day})');
-      // debugPrint(' dtNowDate ${dtNowDate.year} ${dtNowDate.month} ${dtNowDate.day})');
       if(dtNowDate.year == dtPreRealTime.year
           && dtNowDate.month == dtPreRealTime.month
           && dtNowDate.day == dtPreRealTime.day){
         setState(()=> {
+          //既に本日は習慣開始済みであれば、習慣を開始した時刻をセット
+          limitTimeText = '既に習慣開始済み',
+          limitTime = '${dtPreRealTime.hour.toString().padLeft(2,'0')}:${dtPreRealTime.minute.toString().padLeft(2,'0')}',
           todayHabitsStart = true
         });
       }
@@ -809,8 +807,11 @@ class _MyHomePageState extends State<MyHomePage> {
         todayHabitsStart = false
       });
     }
- //   debugPrint(' todayHabitsStart2 $todayHabitsStart');
+
   }
+  /*------------------------------------------------------------------
+通知制御
+ -------------------------------------------------------------------*/
   Future<void> setLocalNotification() async {
 
     //そもそも通知制御しないのであれば通知セットしない

@@ -63,8 +63,8 @@ class _AchievementScreenState extends State<AchievementScreen> {
             border: Border(bottom: BorderSide(width: 1.0, color: Colors.grey))),
         child: ListTile(
             title:  Row(children:  <Widget>[
-              Text('No       ', style:  const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              Text('称号タイトル', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              Text('No       ', style:  const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+              Text('称号タイトル', style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
             ])));
   }
   void getItems() async {
@@ -82,7 +82,9 @@ class _AchievementScreenState extends State<AchievementScreen> {
           boolAchieveReleaseFlg = true;
         }
       }
-      list.add(ListTile(
+      list.add(
+          
+          ListTile(
         //tileColor: Colors.grey,
         // tileColor: (item['getupstatus'].toString() == cnsGetupStatusS)
         //     ? Colors.green
@@ -91,13 +93,10 @@ class _AchievementScreenState extends State<AchievementScreen> {
         //     ? const Icon(Icons.thumb_up)
         //     : const Icon(Icons.redo),
         title:Text('${item['No']}        ${item['title']}',
-          style:  TextStyle(color: boolAchieveReleaseFlg ? Colors.white : Colors.grey,fontSize: 12),),
-        dense: true,
-          selected: listNo == item['No'],
-          onTap: () {
-            listNo = item['No'];
-            _tapTile();
-          }
+          style:  TextStyle(color: boolAchieveReleaseFlg ? Colors.black : Colors.grey,fontSize: 15),),
+              dense: true,
+              selected: listNo == item['No'],
+              onTap: () {listNo = item['No'];_tapTile();}
       ));
     }
     setState(() {

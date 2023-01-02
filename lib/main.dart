@@ -851,8 +851,8 @@ class _MyHomePageState extends State<MyHomePage> {
     ///通知セット
     await flutterLocalNotificationsPlugin.zonedSchedule(
         alarmID,
-        '勉強時間アラーム',
-        '習慣開始まで、あと何時間何分です。',
+        'はじめる習慣',
+        '習慣開始まで、あと${notificationTime.hour}時間${notificationTime.minute}分です',
         tz.TZDateTime.now(tz.local).add(Duration(seconds: notifiSecond)),
         const NotificationDetails(
             android: AndroidNotificationDetails(

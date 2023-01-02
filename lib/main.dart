@@ -336,6 +336,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ]
           )
       ),
+      ///下のバー
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 0,
         items: const <BottomNavigationBarItem>[
@@ -356,6 +357,8 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+
+  ///習慣開始ボタン押下時のメソッド
   Future<void> buttonPressed() async {
       showDialog(
           context: context,
@@ -378,7 +381,6 @@ class _MyHomePageState extends State<MyHomePage> {
         case 'Yes':
           todayHabitsStart = true;
           //履歴・習慣状況テーブルに更新
-        debugPrint("習慣開始はい押下");
           //アチーブメント判定・表示、データ登録
           saveRirekiHabitsData();
           break;
@@ -729,7 +731,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onTimer(Timer timer) {
 
     String  strGoalTime;
- //   debugPrint('strMode:$strMode');
     if (strMode == cnsModeEveryDay){
       strGoalTime = everyTime.toString();
     }else{
@@ -754,10 +755,6 @@ class _MyHomePageState extends State<MyHomePage> {
     int diffSecond;
     diffSecond = goalTime.difference(nowTime).inSeconds;
 
-    // debugPrint('goalTime:$goalTime');
-    // debugPrint('nowTime:$nowTime');
-    // debugPrint('diffSecond:$diffSecond');
-
     int intHour;
     int intHourAmariSec;
     int intMinute;
@@ -772,11 +769,6 @@ class _MyHomePageState extends State<MyHomePage> {
     intHourAmariSec = (diffSecond % 3600).floor();
     intMinute = (intHourAmariSec / 60).floor();
     intSecond = (intHourAmariSec % 60).floor();
-
-    /// 「時:分:秒」表記に文字列を変換するdateFormatを宣言する
-   // var dateFormat = DateFormat('HH:mm:ss');
-    /// nowをdateFormatでstringに変換する
-   // String timeString = dateFormat.format(now);
 
     setState(() => {
       if(todayHabitsStart == false){

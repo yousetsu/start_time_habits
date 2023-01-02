@@ -220,7 +220,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         padding: const EdgeInsets.fromLTRB(0,10,0,10),
                         alignment: Alignment.bottomCenter,
                         decoration: BoxDecoration(border: Border.all(color: Colors.blue), borderRadius: BorderRadius.circular(10), color: Colors.blue,),
-
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children:  <Widget>[
@@ -236,9 +235,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                             SizedBox(width: 50, height: 50, ),
                         ],),
-
                       ),
-
                 ///習慣開始ボタン
                 SizedBox(
                   width: 200, height: 70,

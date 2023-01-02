@@ -380,7 +380,7 @@ class _MyHomePageState extends State<MyHomePage> {
   /*------------------------------------------------------------------
 第一画面ロード
  -------------------------------------------------------------------*/
-  Future<void>  loadPref() async {
+  Future<void>  loadHabits() async {
     String dbPath = await getDatabasesPath();
     String path = p.join(dbPath, 'internal_assets.db');
      Database database = await openDatabase(path, version: 1);
@@ -392,6 +392,7 @@ class _MyHomePageState extends State<MyHomePage> {
          intDueNum = item['due_num'];
          intComboDueNum = item['combodue_num'];
          intRestart = item['restart'];
+         debugPrint('継続日数:$intComboNum');
        });
     }
     await database.close();
@@ -505,7 +506,13 @@ class _MyHomePageState extends State<MyHomePage> {
     DateTime dtPreRealTime =  DateTime.parse(strPreRealTime.toString());
     DateTime dtNowDateYest = dtNowDateVs.add(const Duration(days: -1));
 
-    if(dtPreRealTime.isAtSameMomentAs(dtNowDateYest)){
+    debugPrint('dtPreRealTime:${dtPreRealTime.toString()}');
+    debugPrint('dtNowDateVs:${dtNowDateVs.toString()}');
+    debugPrint('dtNowDateYest:${dtNowDateYest.toString()}');
+
+    if(dtPreRealTime.year == dtNowDateYest.year
+    && dtPreRealTime.month == dtNowDateYest.month
+        && dtPreRealTime.day == dtNowDateYest.day){
       setState(() {intComboNum++;});
     }
 
@@ -515,14 +522,18 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     //昨日のデータが存在しかつ、前回今回共に　習慣を守っていればカウントアップ
-    if(dtPreRealTime.isAtSameMomentAs(dtNowDateYest)) {
+    if(dtPreRealTime.year == dtNowDateYest.year
+        && dtPreRealTime.month == dtNowDateYest.month
+        && dtPreRealTime.day == dtNowDateYest.day) {
       if(strPreStatus == cnsStatusHabitsDue && strStatus == cnsStatusHabitsDue){
         setState(() {intComboDueNum++;});
       }
     }
 
     //前回の実績がなかったらカウントアップ
-    if(dtPreRealTime.isAtSameMomentAs(dtNowDateYest) == false ){
+    if(dtPreRealTime.year != dtNowDateYest.year
+       || dtPreRealTime.month != dtNowDateYest.month
+        || dtPreRealTime.day != dtNowDateYest.day ){
       setState(() {intRestart++;});
     }
     //習慣テーブルにアップデート
@@ -884,7 +895,7 @@ Goaltimeの算出
 初期処理
  -------------------------------------------------------------------*/
   void init() async {
-  await  loadPref();
+  await  loadHabits();
   await  loadSetting();
   await  calGoaltime();
   await  judgeTodayStartTime();

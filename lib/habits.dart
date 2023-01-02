@@ -28,8 +28,8 @@ class _HabitsScreenState extends State<HabitsScreen> {
         body:SingleChildScrollView(
           child: Column(
               //mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children:  <Widget>[
               Container(
                // margin: const EdgeInsets.only(top:20, left:20),
@@ -43,20 +43,20 @@ class _HabitsScreenState extends State<HabitsScreen> {
                   markedDateIconBuilder: (event)=>event.icon,  //アイコン
                 ),
               ),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                   children:  <Widget>[
-                    Icon(Icons.thumb_up,color: Colors.white),
-                    Text('・・・習慣実行',style:TextStyle(fontSize: 20.0,color: Colors.white)),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children:  <Widget>[
-                    Icon(Icons.diamond,color: Colors.white),
-                    Text('・・・目標時間内に習慣実行',style:TextStyle(fontSize: 20.0,color: Colors.white)),
-                  ],
-                ),
+                // Row(
+                //     mainAxisAlignment: MainAxisAlignment.center,
+                //    children:  <Widget>[
+                //    // Icon(Icons.thumb_up,color: Colors.black),
+                //     Text('黒字：習慣開始',style:TextStyle(fontSize: 20.0,color: Colors.black)),
+                //   ],
+                // ),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.center,
+                //   children:  <Widget>[
+                //    // Icon(Icons.diamond,color: Colors.white),
+                //     Text('青字：目標時間内に習慣はじめた',style:TextStyle(fontSize: 20.0,color: Colors.blue)),
+                //   ],
+                // ),
               ]
           ),
 
@@ -96,7 +96,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
         children: [
           Text(date.day.toString(), style: TextStyle(color: _isToday? Colors.white: getDayCol(date), fontWeight: FontWeight.w400),//日付の文字　今日は白、それ以外は平日黒、休日赤
          ),
-         Text('${realDate.hour.toString().padLeft(2, '0')}:${realDate.minute.toString().padLeft(2, '0')}', style: TextStyle(color: isStatus(strStatus)?Colors.blue:Colors.white  ,fontSize: 14) ),
+         Text('${realDate.hour.toString().padLeft(2, '0')}:${realDate.minute.toString().padLeft(2, '0')}', style: TextStyle(color: isStatus(strStatus)?Colors.black:Colors.blue  ,fontSize: 14) ),
 
     //期限内に開始できたらダイアモンド、そのひ開始できたらサムズアップ
     //     SizedBox(height: 2,), Icon(status == cnsStatusHabitsDue ? Icons.diamond:Icons.thumb_up  , color: Colors.white, size: 16,), //日付と一緒に表示するアイコン

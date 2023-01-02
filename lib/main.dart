@@ -18,7 +18,6 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 
-
 const String strCnsSqlCreateRireki ="CREATE TABLE IF NOT EXISTS rireki(id INTEGER PRIMARY KEY, goaltime TEXT, realtime TEXT, status TEXT, kaku1 INTEGER, kaku2 INTEGER, kaku3 TEXT, kaku4 TEXT)";
 const String strCnsSqlCreateAchievement ="CREATE TABLE IF NOT EXISTS achievement_user(id INTEGER PRIMARY KEY, No TEXT,kaku1 INTEGER, kaku2 INTEGER, kaku3 TEXT, kaku4 TEXT)";
 //アラーム用のID
@@ -119,13 +118,9 @@ Future<void> firstRun() async {
 void main() async{
   //SQLfliteで必要？
   WidgetsFlutterBinding.ensureInitialized();
-
   await firstRun();
-
   //タイムゾーン初期化
   await _configureLocalTimeZone();
-
-
   //通知のための初期化
   final NotificationAppLaunchDetails? notificationAppLaunchDetails = !kIsWeb &&
       Platform.isLinux
@@ -200,15 +195,11 @@ class _MyHomePageState extends State<MyHomePage> {
   String notificationFlg = '0';
   DateTime notificationTime = DateTime.utc(0, 0, 0);
   String firstSet = '0';
-
   String limitTimeText = '';
   String limitTime = '';
   bool todayHabitsStart = false; //本日の習慣開始ボタンを押したか？
   DateTime goalTimeParse = DateTime.utc(0, 0, 0);
-
   String strGoalTime = '';
-
-
   @override
   void initState() {
     super.initState();
@@ -222,7 +213,6 @@ class _MyHomePageState extends State<MyHomePage> {
       body: SingleChildScrollView(
           child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-
               children:  <Widget>[
                 Padding(padding: EdgeInsets.all(20)),
                       Container(
@@ -433,25 +423,16 @@ class _MyHomePageState extends State<MyHomePage> {
  -------------------------------------------------------------------*/
   Future<String?> _loadStrRireki(String field) async{
     String? strValue = "";
-    debugPrint('getDatabasesPath');
     String dbPath = await getDatabasesPath();
     String path = p.join(dbPath, 'rireki.db');
-    debugPrint('openDatabase');
-    debugPrint('path:$path');
     Database database = await openDatabase(path, version: 1);
-    debugPrint('database.rawQuery');
     List<Map> result = await database.rawQuery("SELECT $field From (SELECT $field From rireki order by realtime desc ) limit 1");
-    debugPrint('Map item in result');
     for (Map item in result) {
-      debugPrint('strValue:$strValue');
       strValue = item[field].toString();
     }
-    debugPrint('database.close()');
     await database.close();
     return strValue;
-
   }
-
 //-------------------------------------------------------------
 //   データベースにデータ保存
 //-------------------------------------------------------------

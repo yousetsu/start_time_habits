@@ -216,7 +216,7 @@ class _SettingScreenState extends State<SettingScreen> {
         isOnNotification = (notification == '0')?  false:true;
       });
     }
-    await  database.close();
+ //   await  database.close();
   }
 //-------------------------------------------------------------
 //   設定テーブルにデータ保存
@@ -232,7 +232,7 @@ class _SettingScreenState extends State<SettingScreen> {
       await txn.rawInsert(query);
       //   print("insert: $id");
     });
-    database.close();
+ //   database.close();
   }
   //-------------------------------------------------------------
 //   ローカル通知セット

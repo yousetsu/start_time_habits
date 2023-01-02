@@ -104,7 +104,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
     String path =   p.join(dbPath, 'rireki.db');
     Database database = await openDatabase(path, version: 1);
     mapRireki = await database.rawQuery("SELECT * From rireki order by realtime desc");
-    await database.close();
+ //   await database.close();
   }
   /*------------------------------------------------------------------
 MarkedDateMap作成

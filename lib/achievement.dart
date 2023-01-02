@@ -83,7 +83,7 @@ class _AchievementScreenState extends State<AchievementScreen> {
         }
       }
       list.add(
-          
+
           ListTile(
         //tileColor: Colors.grey,
         // tileColor: (item['getupstatus'].toString() == cnsGetupStatusS)
@@ -168,7 +168,7 @@ class _AchievementScreenState extends State<AchievementScreen> {
     String path = p.join(dbPath, 'achievement.db');
     Database database = await openDatabase(path, version: 1);
     List<Map> result = await database.rawQuery("SELECT * from achievement_user ");
-    await database.close();
+   // await database.close();
     return result;
 
   }

@@ -101,14 +101,14 @@ Future<void> firstRun() async {
   await openDatabase(path, version: 1,
       onCreate: (Database db, int version) async {
         await db.execute(strCnsSqlCreateRireki);
-        await db.close();
+       // await db.close();
       });
   //
   path = p.join(dbpath, "achievement.db");
   await openDatabase(path, version: 1,
       onCreate: (Database db, int version) async {
         await db.execute(strCnsSqlCreateAchievement);
-        await db.close();
+      //  await db.close();
       });
 
 }
@@ -392,7 +392,7 @@ class _MyHomePageState extends State<MyHomePage> {
          debugPrint('継続日数:$intComboNum');
        });
     }
-    await database.close();
+  //  await database.close();
   }
   /*------------------------------------------------------------------
 設定情報のロード
@@ -413,8 +413,7 @@ class _MyHomePageState extends State<MyHomePage> {
         firstSet = item['firstset'].toString();
       });
     }
-    await database.close();
-    debugPrint('loadSetting notificationFlg:$notificationFlg');
+  //  await database.close();
   }
   /*------------------------------------------------------------------
 直前の履歴データロード
@@ -428,7 +427,7 @@ class _MyHomePageState extends State<MyHomePage> {
     for (Map item in result) {
       strValue = item[field].toString();
     }
-    await database.close();
+ //   await database.close();
     return strValue;
   }
 //-------------------------------------------------------------
@@ -545,7 +544,7 @@ class _MyHomePageState extends State<MyHomePage> {
       await txn.rawInsert(query);
       //   print("insert: $id");
     });
-    database.close();
+  //  database.close();
 
     //履歴テーブルに登録
     debugPrint('履歴テーブルに登録');
@@ -561,7 +560,7 @@ class _MyHomePageState extends State<MyHomePage> {
       await txn.rawInsert(query);
       //   print("insert: $id");
     });
-    await database.close();
+   // await database.close();
 
    //アチーブメントユーザーマスタから達成状況をロード
     List<Map> achievementUserMap = await  _loadAchievementUser();
@@ -648,7 +647,7 @@ class _MyHomePageState extends State<MyHomePage> {
           await txn.rawInsert(query);
       //   print("insert: $id");
         });
-        await database.close();
+   //     await database.close();
       }
 
     ///明日の通知分をセット
@@ -707,9 +706,8 @@ class _MyHomePageState extends State<MyHomePage> {
     String path = p.join(dbPath, 'achievement.db');
     Database database = await openDatabase(path, version: 1);
     List<Map> result = await database.rawQuery("SELECT * from achievement_user ");
-    await database.close();
+   // await database.close();
     return result;
-
   }
   /*------------------------------------------------------------------
 リアルタイムカウントダウン
@@ -890,7 +888,7 @@ Goaltimeの算出
 初期処理
  -------------------------------------------------------------------*/
   void init() async {
-   // await  testEditDB();
+  //  await  testEditDB();
   await  loadHabits();
   await  loadSetting();
   await  calGoaltime();

@@ -43,20 +43,6 @@ class _HabitsScreenState extends State<HabitsScreen> {
                   markedDateIconBuilder: (event)=>event.icon,  //アイコン
                 ),
               ),
-                // Row(
-                //     mainAxisAlignment: MainAxisAlignment.center,
-                //    children:  <Widget>[
-                //    // Icon(Icons.thumb_up,color: Colors.black),
-                //     Text('黒字：習慣開始',style:TextStyle(fontSize: 20.0,color: Colors.black)),
-                //   ],
-                // ),
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.center,
-                //   children:  <Widget>[
-                //    // Icon(Icons.diamond,color: Colors.white),
-                //     Text('青字：目標時間内に習慣はじめた',style:TextStyle(fontSize: 20.0,color: Colors.blue)),
-                //   ],
-                // ),
               ]
           ),
 
@@ -97,10 +83,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
           Text(date.day.toString(), style: TextStyle(color: _isToday? Colors.white: getDayCol(date), fontWeight: FontWeight.w400),//日付の文字　今日は白、それ以外は平日黒、休日赤
          ),
          Text('${realDate.hour.toString().padLeft(2, '0')}:${realDate.minute.toString().padLeft(2, '0')}', style: TextStyle(color: isStatus(strStatus)?Colors.black:Colors.blue  ,fontSize: 14) ),
-
-    //期限内に開始できたらダイアモンド、そのひ開始できたらサムズアップ
-    //     SizedBox(height: 2,), Icon(status == cnsStatusHabitsDue ? Icons.diamond:Icons.thumb_up  , color: Colors.white, size: 16,), //日付と一緒に表示するアイコン
-     ]
+        ]
     ));
   }
   static bool isSameDay(DateTime day1, DateTime day2) {
@@ -143,24 +126,11 @@ MarkedDateMap作成
         ()).year,DateTime.parse(item['realtime'].toString()).month,DateTime.parse(item['realtime'].toString()).day);
       strStatus = item['status'].toString();
       realTime  = DateTime.parse(item['realtime'].toString());
-      debugPrint( 'start');
-      debugPrint( '実際の時間:$realTime');
-      debugPrint( '目標時間:${DateTime.parse(item['goaltime'].toString())}');
-      debugPrint( 'ステータス:$strStatus');
-     // debugPrint('${DateTime.parse(item['realtime'].toString()).day}');
-      //debugPrint('${DateTime.parse(item['realtime'].toString()).hour} : ${DateTime.parse(item['realtime'].toString()).minute}');
-      debugPrint( 'end');
       setState(() {
         markedDateMap.add(dateTime, new Event(
             date: dateTime, icon: _getIcon(dateTime, strStatus,realTime))); //アイコンを作成
       });
     }
-    //  dateTime = DateTime(2022, 12, 10);
-    // _markedDateMap.add(dateTime,new Event(date: dateTime, icon: _getIcon(dateTime,'0')));
-    // // dateTime = DateTime(2022, 12, 11);
-    // _markedDateMap.add(dateTime,new Event(date: dateTime, icon: _getIcon(dateTime,'1')));
-    // dateTime = DateTime(2022, 12, 23);
-    // _markedDateMap.add(dateTime,new Event(date: dateTime, icon: _getIcon(dateTime,'1')));
   }
 
 }

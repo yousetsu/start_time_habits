@@ -438,8 +438,8 @@ class _MyHomePageState extends State<MyHomePage> {
     String strNowDate = DateTime.now().toString();//ボタンを押下した時の時刻
     String strGoalTime;
     DateTime dtNowDate = DateTime.parse(strNowDate.toString());
-    //比較用の変数
-    DateTime dtNowDateVs = DateTime.utc(2016,5,1,dtNowDate.hour,dtNowDate.minute,0);
+    //目標時間比較用の現在日時変数
+    DateTime dtNowDate20160501 = DateTime.utc(2016,5,1,dtNowDate.hour,dtNowDate.minute,0);
     DateTime dtGoalTime;
 
     //現在日時を退避
@@ -448,8 +448,6 @@ class _MyHomePageState extends State<MyHomePage> {
       limitTimeText = '既に習慣開始済み',
       limitTime = '${dtNowDate.hour.toString().padLeft(2,'0')}:${dtNowDate.minute.toString().padLeft(2,'0')}',
     });
-
-
     //ステータス
     String strStatus = cnsStatusHabits; //習慣を実行
 
@@ -492,7 +490,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //ステータス判定
     //現在時刻が、目標時間以内だったら期限内実成功
     // 目標時間　>　現在時間
-    if(dtGoalTime.isAfter(dtNowDateVs)) {
+    if(dtGoalTime.isAfter(dtNowDate20160501)) {
       strStatus = cnsStatusHabitsDue; //習慣を期限内に実行
     }
 
@@ -501,10 +499,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
     //直前の日時が1日前だったら、連続実行回数をカウントアップ
     DateTime dtPreRealTime =  DateTime.parse(strPreRealTime.toString());
-    DateTime dtNowDateYest = dtNowDateVs.add(const Duration(days: -1));
+    DateTime dtNowDateYest = dtNowDate.add(const Duration(days: -1));
 
     debugPrint('dtPreRealTime:${dtPreRealTime.toString()}');
-    debugPrint('dtNowDateVs:${dtNowDateVs.toString()}');
+    debugPrint('dtNowDateVs:${dtNowDate.toString()}');
     debugPrint('dtNowDateYest:${dtNowDateYest.toString()}');
 
     if(dtPreRealTime.year == dtNowDateYest.year
@@ -892,11 +890,37 @@ Goaltimeの算出
 初期処理
  -------------------------------------------------------------------*/
   void init() async {
+   // await  testEditDB();
   await  loadHabits();
   await  loadSetting();
   await  calGoaltime();
   await  judgeTodayStartTime();
   await  setLocalNotification();
   }
+/*------------------------------------------------------------------
+テスト用DB編集処理
+ -------------------------------------------------------------------*/
+  Future<void> testEditDB() async {
 
+    String dbPath = '';
+    String query = '';
+    String path = p.join(dbPath, 'rireki.db');
+
+    String? strId = '';
+    strId = await _loadStrRireki('id');
+
+    Database database = await openDatabase(path, version: 1,
+        onCreate: (Database db, int version) async {
+          await db.execute(strCnsSqlCreateRireki);
+        });
+    query = 'Delete from rireki where id = $strId ';
+
+    // 'INSERT INTO rireki(goaltime,realtime, status,kaku1,kaku2,kaku3,kaku4) values("$strGoalTime","$strNowDate","$strStatus",null,null,null,null)';
+    await database.transaction((txn) async {
+//      int id = await txn.rawInsert(query);
+      await txn.rawInsert(query);
+      //   print("insert: $id");
+    });
+
+  }
 }

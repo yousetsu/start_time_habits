@@ -813,8 +813,8 @@ class _MyHomePageState extends State<MyHomePage> {
     DateTime dtNowDate = DateTime.now();
     //履歴テーブルから直前の日時を取得
     strPreRealTime = await _loadStrRireki('realtime');
-
-    if(strPreRealTime != null){
+    debugPrint('strPreRealTime:$strPreRealTime');
+    if(strPreRealTime != null && strPreRealTime.isNotEmpty){
       dtPreRealTime = DateTime.parse(strPreRealTime);
       if(dtNowDate.year == dtPreRealTime.year
           && dtNowDate.month == dtPreRealTime.month

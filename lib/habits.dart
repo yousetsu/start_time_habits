@@ -24,7 +24,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('習慣状況')),
+      appBar: AppBar(title: const Text('習慣状況カレンダー')),
         body:SingleChildScrollView(
           child: Column(
               //mainAxisAlignment: MainAxisAlignment.center,

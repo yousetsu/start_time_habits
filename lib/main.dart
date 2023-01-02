@@ -444,7 +444,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //現在日時を退避
     setState(() =>
     {
-      limitTimeText = '既に習慣開始済み',
+      limitTimeText = '習慣開始済',
       limitTime = '${dtNowDate.hour.toString().padLeft(2,'0')}:${dtNowDate.minute.toString().padLeft(2,'0')}',
     });
     //ステータス
@@ -782,7 +782,7 @@ class _MyHomePageState extends State<MyHomePage> {
           && dtNowDate.day == dtPreRealTime.day){
         setState(()=> {
           //既に本日は習慣開始済みであれば、習慣を開始した時刻をセット
-          limitTimeText = '既に習慣開始済み',
+          limitTimeText = '習慣開始済',
           limitTime = '${dtPreRealTime.hour.toString().padLeft(2,'0')}:${dtPreRealTime.minute.toString().padLeft(2,'0')}',
           todayHabitsStart = true
         });

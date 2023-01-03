@@ -77,7 +77,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
         children: [
           Text(date.day.toString(), style: TextStyle(color: _isToday? Colors.white: getDayCol(date), fontWeight: FontWeight.w400),//日付の文字　今日は白、それ以外は平日黒、休日赤
          ),
-         Text('${realDate.hour.toString().padLeft(2, '0')}:${realDate.minute.toString().padLeft(2, '0')}', style: TextStyle(color: isStatus(strStatus)?Colors.black:Colors.blue  ,fontSize: 14) ),
+         Text('${realDate.hour.toString().padLeft(2, '0')}:${realDate.minute.toString().padLeft(2, '0')}', style: TextStyle(color: isStatus(strStatus)?Colors.black:Colors.blue  ,fontSize: 12) ),
         ]
     ));
   }

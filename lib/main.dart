@@ -227,7 +227,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children:   <Widget>[
-                                Text('         目標時間         ',style:TextStyle(color: Colors.white,fontSize: 20.0)),
+                                Text('      　  目標時間 　       ',style:TextStyle(color: Colors.white,fontSize: 20.0)),
                                 Text( '${goalTimeParse.hour.toString().padLeft(2, '0')}:${goalTimeParse.minute.toString().padLeft(2, '0')}',style:TextStyle(color: Colors.white,fontSize: 40.0,fontWeight: FontWeight.w600)),
                                 Text(limitTimeText.toString(),style:TextStyle(color: Colors.white,fontSize: 20.0,)),
                                 Text(limitTime.toString(),style:TextStyle(color: Colors.white,fontSize: 40.0,fontWeight: FontWeight.w600))

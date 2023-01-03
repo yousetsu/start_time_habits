@@ -955,7 +955,7 @@ Goaltimeの算出
 初期処理
  -------------------------------------------------------------------*/
   void init() async {
-   // await  testEditDB();
+  //  await  testEditDB();
   await  loadHabits();
   await  loadSetting();
   await  calGoaltime();
@@ -967,9 +967,9 @@ Goaltimeの算出
  -------------------------------------------------------------------*/
   Future<void> testEditDB() async {
 
-    String dbPath = '';
+    String dbPath = await getDatabasesPath();
     String query = '';
-    ///履歴テーブル
+    ///履歴テーブル直近削除
     String path = p.join(dbPath, 'rireki.db');
     String? strId = '';
     strId = await _loadStrRireki('id');
@@ -982,7 +982,18 @@ Goaltimeの算出
     await database.transaction((txn) async {
       await txn.rawInsert(query);
     });
-///習慣テーブル更新
+    ///履歴テーブル過去データ挿入20220101
+    // String path = p.join(dbPath, 'rireki.db');
+    // Database database = await openDatabase(path, version: 1,
+    //     onCreate: (Database db, int version) async {
+    //       await db.execute(strCnsSqlCreateRireki);
+    //     });
+    // query = 'INSERT INTO rireki(goaltime,realtime,status,kaku1,kaku2,kaku3,kaku4) values("2016-05-01 19:00:00.000Z","2023-01-01 19:00:00.000Z","1",null,null,null,null) ';
+    // await database.transaction((txn) async {
+    //   await txn.rawInsert(query);
+    // });
+
+    ///習慣テーブル更新
 //     String strHapitsPath = p.join(dbPath, 'internal_assets.db');
 //     Database databaseHapits = await openDatabase(strHapitsPath, version: 1,
 //         onCreate: (Database db, int version) async {

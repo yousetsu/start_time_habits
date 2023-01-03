@@ -56,7 +56,7 @@ List<Map<String, dynamic>> achievementMapList = [
   {'No':'530','title':'習慣継続神','body':'習慣継続神、ここまでできるのはスゴイ！','num':0,'combo_num':100,'due_num':0,'combodue_num':0,'restart':0},
   {'No':'540','title':'習慣期日神','body':'時間を操る神でしょう！時間との付き合い方が神がかっております。','num':0,'combo_num':0,'due_num':100,'combodue_num':0,'restart':0},
   {'No':'550','title':'習慣継続期日神','body':'もう世界はあなたの思うまま！？','num':0,'combo_num':0,'due_num':0,'combodue_num':100,'restart':0},
-  {'No':'560','title':'習慣復活１回','body':'一回途切れても！再開！素晴らしいです。','num':0,'combo_num':0,'due_num':0,'combodue_num':0,'restart':1},
+  {'No':'560','title':'習慣復活１回','body':'一回途切れても再開！素晴らしいです。','num':0,'combo_num':0,'due_num':0,'combodue_num':0,'restart':1},
   {'No':'570','title':'諦めない心','body':'途切れても再スタート！','num':0,'combo_num':0,'due_num':0,'combodue_num':0,'restart':3},
   {'No':'580','title':'達磨','body':'７転び８起きの精神！','num':0,'combo_num':0,'due_num':0,'combodue_num':0,'restart':8},
   {'No':'590','title':'不屈の闘志','body':'やめてもやめても立ち上がる！まさに不屈の闘志！','num':0,'combo_num':0,'due_num':0,'combodue_num':0,'restart':10},

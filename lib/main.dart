@@ -542,13 +542,14 @@ class _MyHomePageState extends State<MyHomePage> {
       if (dtPreRealTime.year == dtNowDateYest.year
           && dtPreRealTime.month == dtNowDateYest.month
           && dtPreRealTime.day == dtNowDateYest.day) {
-        setState(() {
-          intComboNum++;
-        });
+        setState(() {intComboNum++;});
+      }else{
+        //そうでなければカウントを1に戻す
+        setState(() {intComboNum = 1;});
       }
     }else{
       //そうでなければカウントを1に戻す
-      intComboNum = 1;
+      setState(() {intComboNum = 1;});
     }
 
     //期限を守っていればカウントアップ

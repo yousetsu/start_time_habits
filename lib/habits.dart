@@ -14,6 +14,27 @@ class HabitsScreen extends StatefulWidget {
   State<HabitsScreen> createState() => _HabitsScreenState();
 }
 class _HabitsScreenState extends State<HabitsScreen> {
+  //バナー広告初期化
+  final BannerAd myBanner = BannerAd(
+    adUnitId : strCnsBannerID,
+    size: AdSize.banner,
+    request: const AdRequest(),
+    listener: BannerAdListener(
+      onAdLoaded: (Ad ad) => print('バナー広告がロードされました'),
+      // Called when an ad request failed.
+      onAdFailedToLoad: (Ad ad, LoadAdError error) {
+        // Dispose the ad here to free resources.
+        ad.dispose();
+        //  print('バナー広告の読み込みが次の理由で失敗しました: $error');
+      },
+      // Called when an ad opens an overlay that covers the screen.
+      onAdOpened: (Ad ad) => print('バナー広告が開かれました'),
+      // Called when an ad removes an overlay that covers the screen.
+      onAdClosed: (Ad ad) => print('バナー広告が閉じられました'),
+      // Called when an impression occurs on the ad.
+      onAdImpression: (Ad ad) => print('Ad impression.'),
+    ),
+  );
   @override
   void initState()  {
     super.initState();
@@ -22,6 +43,15 @@ class _HabitsScreenState extends State<HabitsScreen> {
   }
   @override
   Widget build(BuildContext context) {
+    //動画バナーロード
+    myBanner.load();
+    final AdWidget adWidget = AdWidget(ad: myBanner);
+    final Container adContainer = Container(
+      alignment: Alignment.center,
+      width: myBanner.size.width.toDouble(),
+      height: myBanner.size.height.toDouble(),
+      child: adWidget,
+    );
     return Scaffold(
       appBar: AppBar(title: const Text('習慣状況カレンダー')),
         body:SingleChildScrollView(
@@ -40,6 +70,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
                   markedDateIconBuilder: (event)=>event.icon,  //アイコン
                 ),
               ),
+                adContainer,
               ]
           ),
 

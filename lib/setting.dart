@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 import './const.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'main.dart';
 //ローカル通知の時間をセットするためタイムゾーンの定義が必要
@@ -31,31 +32,6 @@ class _SettingScreenState extends State<SettingScreen> {
   String? strMode = '';
   String? strFirstSet = '';
 
-  void _createRewardedAd() {
-    RewardedAd.load(
-        adUnitId: strCnsRewardID,
-        request: const AdRequest(),
-        rewardedAdLoadCallback: RewardedAdLoadCallback(
-          onAdLoaded: (RewardedAd ad) {
-            //  print('$ad loaded.');
-            _rewardedAd = ad;
-          },
-          onAdFailedToLoad: (LoadAdError error) {
-            //  print('RewardedAd failed to load: $error');
-            _rewardedAd = null;
-          },
-        ));
-
-  }
-  void _showRewardedAd() {
-    _rewardedAd!.setImmersiveMode(true);
-    _rewardedAd!.show(
-        onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
-          print('$ad with reward $RewardItem(${reward.amount}, ${reward
-              .type})');
-        });
-    _rewardedAd = null;
-  }
   @override
   void initState() {
     super.initState();
@@ -340,6 +316,72 @@ class _SettingScreenState extends State<SettingScreen> {
       debugPrint('$notifiSecond 秒後にローカル通知');
     }
 
+  }
+  /*------------------------------------------------------------------
+動画準備
+ -------------------------------------------------------------------*/
+  void _createRewardedAd() {
+    RewardedAd.load(
+        adUnitId: strCnsRewardID,
+        request: const AdRequest(),
+        rewardedAdLoadCallback: RewardedAdLoadCallback(
+          onAdLoaded: (RewardedAd ad) {
+            //  print('$ad loaded.');
+            _rewardedAd = ad;
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            //  print('RewardedAd failed to load: $error');
+            _rewardedAd = null;
+          },
+        ));
+
+  }
+  /*------------------------------------------------------------------
+動画実行
+ -------------------------------------------------------------------*/
+  void _showRewardedAd() async {
+    int rewardcnt = 0;
+    rewardcnt = await _loadRewardCnt();
+    if(rewardcnt >= 3 ) {
+      _rewardedAd!.setImmersiveMode(true);
+      _rewardedAd!.show(
+          onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
+            print('$ad with reward $RewardItem(${reward.amount}, ${reward
+                .type})');
+          });
+      _rewardedAd = null;
+      rewardcnt = 0;
+    }else{
+      rewardcnt++;
+      _updRewardCnt(rewardcnt);
+    }
+
+  }
+  //-------------------------------------------------------------
+//   リワード回数を取得
+//-------------------------------------------------------------
+  Future<int> _loadRewardCnt() async {
+    int rewardcnt = 0;
+    String dbPath = await getDatabasesPath();
+    String path = p.join(dbPath, 'internal_assets.db');
+    Database database = await openDatabase(path, version: 1);
+    List<Map> result = await database.rawQuery("SELECT reawardcnt From setting  limit 1");
+    for (Map item in result) {
+      setState(() {rewardcnt = item['reawardcnt'];});
+    }
+    return rewardcnt;
+  }
+  //-------------------------------------------------------------
+//   リワード回数を更新
+//-------------------------------------------------------------
+  Future<void> _updRewardCnt(int rewardCnt) async {
+    String dbPath = await getDatabasesPath();
+    String path = p.join(dbPath, 'internal_assets.db');
+    Database database = await openDatabase(path, version: 1);
+    String query = "UPDATE setting set rewardcnt = '$rewardCnt' ";
+    await database.transaction((txn) async {
+      await txn.rawInsert(query);
+    });
   }
 }
 

@@ -528,18 +528,27 @@ class _MyHomePageState extends State<MyHomePage> {
     //実行回数をカウントアップ
     setState(() {intNum++;});
 
+    DateTime dtPreRealTime = DateTime.utc(0,0,0);
+    DateTime dtNowDateYest = DateTime.utc(0,0,0);;
     //直前の日時が1日前だったら、連続実行回数をカウントアップ
-    DateTime dtPreRealTime =  DateTime.parse(strPreRealTime.toString());
-    DateTime dtNowDateYest = dtNowDate.add(const Duration(days: -1));
+    if(strPreRealTime != null && strPreRealTime.isNotEmpty) {
+      dtPreRealTime = DateTime.parse(strPreRealTime.toString());
+      dtNowDateYest = dtNowDate.add(const Duration(days: -1));
 
-    debugPrint('dtPreRealTime:${dtPreRealTime.toString()}');
-    debugPrint('dtNowDateVs:${dtNowDate.toString()}');
-    debugPrint('dtNowDateYest:${dtNowDateYest.toString()}');
+      debugPrint('dtPreRealTime:${dtPreRealTime.toString()}');
+      debugPrint('dtNowDateVs:${dtNowDate.toString()}');
+      debugPrint('dtNowDateYest:${dtNowDateYest.toString()}');
 
-    if(dtPreRealTime.year == dtNowDateYest.year
-    && dtPreRealTime.month == dtNowDateYest.month
-        && dtPreRealTime.day == dtNowDateYest.day){
-      setState(() {intComboNum++;});
+      if (dtPreRealTime.year == dtNowDateYest.year
+          && dtPreRealTime.month == dtNowDateYest.month
+          && dtPreRealTime.day == dtNowDateYest.day) {
+        setState(() {
+          intComboNum++;
+        });
+      }
+    }else{
+      //そうでなければカウントを1に戻す
+      intComboNum = 1;
     }
 
     //期限を守っていればカウントアップ

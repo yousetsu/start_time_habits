@@ -49,7 +49,7 @@ class _SettingScreenState extends State<SettingScreen> {
           Row(mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Icon(Icons.settings,size: 30,color: Colors.blue,),
-                const Text('設定',style:TextStyle(fontSize: 30.0,color: Colors.blue)),
+                const Text('目標時間の設定',style:TextStyle(fontSize: 30.0,color: Colors.blue)),
             ]),
                 Row(mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[

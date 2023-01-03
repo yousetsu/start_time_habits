@@ -707,6 +707,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     ///明日の通知分をセット
     //そもそも通知制御しないのであれば通知セットしない
+    debugPrint('そもそも通知制御しないのであれば通知セットしない判定(ボタン押下時)');
     debugPrint('setLocalNotification notificationFlg:$notificationFlg');
     if(notificationFlg == cnsNotificationOff){
       debugPrint('そもそも通知制御しないのであれば通知セットしない(ボタン押下時)');
@@ -729,6 +730,7 @@ class _MyHomePageState extends State<MyHomePage> {
     notifiSecond = dtNotifTime.difference(nowTime).inSeconds;
 
     ///通知セット
+    debugPrint('そもそも通知制御しないのであれば通知セットしない判定(ボタン押下時)');
     await flutterLocalNotificationsPlugin.zonedSchedule(
         alarmID,
         cnsAppTitle,
@@ -746,7 +748,7 @@ class _MyHomePageState extends State<MyHomePage> {
         uiLocalNotificationDateInterpretation:
         UILocalNotificationDateInterpretation.absoluteTime);
 
-    if(notifiSecond <= 0){
+    if(notifiSecond >= 0){
       debugPrint('$notifiSecond 秒後にローカル通知（ボタン押下時）');
       return;
     }
@@ -855,6 +857,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> setLocalNotification() async {
 
     //そもそも通知制御しないのであれば通知セットしない
+    debugPrint('そもそも通知制御しないのであれば通知セットしない判定');
     debugPrint('setLocalNotification notificationFlg:$notificationFlg');
     if(notificationFlg == cnsNotificationOff){
       debugPrint('そもそも通知制御しないのであれば通知セットしない');
@@ -943,7 +946,7 @@ Goaltimeの算出
 初期処理
  -------------------------------------------------------------------*/
   void init() async {
- //   await  testEditDB();
+   // await  testEditDB();
   await  loadHabits();
   await  loadSetting();
   await  calGoaltime();

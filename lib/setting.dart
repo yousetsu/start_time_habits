@@ -248,14 +248,8 @@ class _SettingScreenState extends State<SettingScreen> {
     }
 
     //通知セットされているかどうか判定
-    debugPrint('通知セットされているかどうか判定');
-    final List<ActiveNotification>? activeNotifications = await  flutterLocalNotificationsPlugin.getActiveNotifications();
-    //既に通知がセットされているのであればローカル通知セットしない
-    debugPrint('activeNotifications:${activeNotifications.toString()}');
-    if(activeNotifications == null){
-      debugPrint('既に通知がセットされているのであればローカル通知セットしない(設定画面)');
-      return;
-    }
+    //→不要。同じアラームIDなら上書きされるため
+
     //タイマー時間算出
     debugPrint('タイマー時間算出');
     String  strGoalTime;
@@ -314,7 +308,6 @@ class _SettingScreenState extends State<SettingScreen> {
 
     if(notifiSecond >= 0){
       debugPrint('$notifiSecond 秒後にローカル通知');
-      debugPrint('activeNotifications:${activeNotifications.toString()}');
     }
 
   }

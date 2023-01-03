@@ -110,6 +110,7 @@ class _AchievementScreenState extends State<AchievementScreen> {
     int intComboNum = 0;
     int intDueNum = 0;
     int intCombodueNum = 0;
+    int intRestart = 0;
     String strContent = '';
     bool boolAchRelease = false;
     //アチーブメントを達成していないものは表示しない
@@ -132,21 +133,26 @@ class _AchievementScreenState extends State<AchievementScreen> {
           intComboNum = item['combo_num'];
           intDueNum = item['due_num'];
           intCombodueNum = item['combodue_num'];
+          intRestart = item['restart'];
         }
       }
 
     if(intNum > 0){
-      strContent ='$strBody \n\n <達成条件>\n 習慣開始　$intNum回以上\n ';
+      strContent ='$strBody \n\n <達成条件>\n 習慣をはじめた回数　$intNum回以上\n ';
     }
     if(intComboNum > 0){
-      strContent ='$strBody \n\n <達成条件>\n 習慣開始継続　$intComboNum日以上\n ';
+      strContent ='$strBody \n\n <達成条件>\n 習慣をはじめた継続日数　$intComboNum日以上\n ';
     }
     if(intDueNum > 0){
-      strContent ='$strBody \n\n <達成条件>\n 目標時間内に開始　$intDueNum回以上\n ';
+      strContent ='$strBody \n\n <達成条件>\n 目標時間内にはじめた回数　$intDueNum回以上\n ';
     }
     if(intCombodueNum > 0){
-      strContent ='$strBody \n\n <達成条件>\n 目標時間内に開始　$intCombodueNum日以上\n ';
+      strContent ='$strBody \n\n <達成条件>\n 目標時間内にはじめた継続日数　$intCombodueNum日以上\n ';
     }
+    if(intRestart > 0){
+      strContent ='$strBody \n\n <達成条件>\n リスタートした回数　$intRestart回以上\n ';
+    }
+
     showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(

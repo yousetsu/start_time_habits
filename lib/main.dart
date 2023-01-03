@@ -556,15 +556,20 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     ///目標時間前にはじめた継続回数
     //昨日のデータが存在しかつ、前回今回共に　習慣を守っていればカウントアップ
-    if(strPreRealTime != null && strPreRealTime.isNotEmpty
-      && dtPreRealTime.year == dtNowDateYest.year
+    if(strPreRealTime != null && strPreRealTime.isNotEmpty){
+      if(dtPreRealTime.year == dtNowDateYest.year
           && dtPreRealTime.month == dtNowDateYest.month
           && dtPreRealTime.day == dtNowDateYest.day
           && strPreStatus == cnsStatusHabitsDue
           && strStatus == cnsStatusHabitsDue) {
         setState(() {intComboDueNum++;});
-    } else{
-      setState(() {intComboDueNum = 1;});
+      }else{
+        setState(() {intComboDueNum = 1;});
+      }
+    }else{
+      if(strStatus == cnsStatusHabitsDue){
+        setState(() {intComboDueNum = 1;});
+      }
     }
     ///リスタート回数
     //前回の実績がなかったらカウントアップ

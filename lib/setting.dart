@@ -9,7 +9,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'main.dart';
 //ローカル通知の時間をセットするためタイムゾーンの定義が必要
 import 'package:timezone/timezone.dart' as tz;
-
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({Key? key}) : super(key: key); //コンストラクタ
@@ -18,8 +18,7 @@ class SettingScreen extends StatefulWidget {
 }
 const String strCnsEveryDay = "EveryDay";
 const String strCnsNormalDay = "NormarlDay";
-
-
+RewardedAd? _rewardedAd;
 class _SettingScreenState extends State<SettingScreen> {
   String? _type = strCnsNormalDay;
   bool isOnNotification = false;
@@ -31,10 +30,37 @@ class _SettingScreenState extends State<SettingScreen> {
   DateTime notificationTime = DateTime.utc(0, 0, 0);
   String? strMode = '';
   String? strFirstSet = '';
+
+  void _createRewardedAd() {
+    RewardedAd.load(
+        adUnitId: strCnsRewardID,
+        request: const AdRequest(),
+        rewardedAdLoadCallback: RewardedAdLoadCallback(
+          onAdLoaded: (RewardedAd ad) {
+            //  print('$ad loaded.');
+            _rewardedAd = ad;
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            //  print('RewardedAd failed to load: $error');
+            _rewardedAd = null;
+          },
+        ));
+
+  }
+  void _showRewardedAd() {
+    _rewardedAd!.setImmersiveMode(true);
+    _rewardedAd!.show(
+        onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
+          print('$ad with reward $RewardItem(${reward.amount}, ${reward
+              .type})');
+        });
+    _rewardedAd = null;
+  }
   @override
   void initState() {
     super.initState();
     loadSetting();
+    _createRewardedAd();
   }
 
   @override
@@ -68,7 +94,8 @@ class _SettingScreenState extends State<SettingScreen> {
                           everyTime = DateTime.utc(2016, 5, 1, value[0], value[1], 0),
                         _saveStrSetting('everystarttime',everyTime.toString()),
                           setLocalNotification(),
-                          loadSetting()
+                          loadSetting(),
+                          _showRewardedAd()
                         });
                       },
                     ).showModal(context);
@@ -95,7 +122,8 @@ class _SettingScreenState extends State<SettingScreen> {
                           normalTime = DateTime.utc(2016, 5, 1, value[0], value[1], 0),
                           _saveStrSetting('normalstarttime',normalTime.toString()),
                           setLocalNotification(),
-                          loadSetting()
+                          loadSetting(),
+                          _showRewardedAd()
                         });
                       },
                     ).showModal(context);
@@ -114,7 +142,8 @@ class _SettingScreenState extends State<SettingScreen> {
                           holidayTime = DateTime.utc(2016, 5, 1, value[0], value[1], 0),
                           _saveStrSetting('holidaystarttime',holidayTime.toString()),
                          setLocalNotification(),
-                          loadSetting()
+                          loadSetting(),
+                          _showRewardedAd()
                         });
                       },
                     ).showModal(context);
@@ -175,6 +204,7 @@ class _SettingScreenState extends State<SettingScreen> {
       ),
     );
   }
+
   /*------------------------------------------------------------------
 設定画面プライベートメソッド
  -------------------------------------------------------------------*/

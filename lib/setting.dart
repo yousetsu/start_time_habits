@@ -247,7 +247,7 @@ class _SettingScreenState extends State<SettingScreen> {
       return;
     }
 
-    //通知セットされているかどうか判定
+    ///通知セットされているかどうか判定
     //→不要。同じアラームIDなら上書きされるため
 
     //タイマー時間算出

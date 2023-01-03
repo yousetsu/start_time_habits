@@ -441,7 +441,7 @@ class _MyHomePageState extends State<MyHomePage> {
         holidayTime = DateTime.parse(item['holidaystarttime'].toString());
         everyTime = DateTime.parse(item['everystarttime'].toString());
         notificationFlg = item['notification'].toString();
-        notificationTime = DateTime.parse(item['everystarttime'].toString());
+        notificationTime = DateTime.parse(item['notificationtime'].toString());
         firstSet = item['firstset'].toString();
       });
     }
@@ -497,9 +497,6 @@ class _MyHomePageState extends State<MyHomePage> {
     //履歴テーブルから直前のステータスを取得
     debugPrint('履歴テーブルから直前のステータスを取得');
     strPreStatus = await _loadStrRireki('status') ;
-
-    //習慣状況テーブルにデータ保存
-  //  String habitsPath = p.join(dbPath, 'internal_assets.db');
 
     //期限を守れているか判定
     //毎日
@@ -698,9 +695,7 @@ class _MyHomePageState extends State<MyHomePage> {
         });
         query = 'INSERT INTO achievement_user(No,kaku1,kaku2,kaku3,kaku4) values("$strNo",null,null,null,null)';
         await database.transaction((txn) async {
-//      int id = await txn.rawInsert(query);
           await txn.rawInsert(query);
-      //   print("insert: $id");
         });
    //     await database.close();
       }
@@ -863,15 +858,23 @@ class _MyHomePageState extends State<MyHomePage> {
       debugPrint('そもそも通知制御しないのであれば通知セットしない');
       return;
     }
+    //既に本日分の履歴があれば既にアラームがセットされているはずなのでセットしない
 
-   //通知セットされているかどうか判定
-    final List<ActiveNotification>? activeNotifications = await  flutterLocalNotificationsPlugin.getActiveNotifications();
-    //既に通知がセットされているのであればローカル通知セットしない
-    if(activeNotifications == null){
-      debugPrint('既に通知がセットされているのであればローカル通知セットしない');
-      return;
+    String? strPreRealTime = '';
+    DateTime dtPreRealTime = DateTime.utc(0,0,0);
+    strPreRealTime = await _loadStrRireki('realtime') ;
+    if(strPreRealTime != null && strPreRealTime.isNotEmpty) {
+      dtPreRealTime = DateTime.parse(strPreRealTime.toString());
+      if (dtPreRealTime.year == DateTime.now().year
+          && dtPreRealTime.month == DateTime.now().month
+          && dtPreRealTime.day == DateTime.now().day) {
+        debugPrint('既に本日分の履歴があれば既にアラームがセットされているはずなのでセットしない');
+        return;
+      }
     }
 
+    ///通知セットされているかどうか判定
+    //→不要。同じアラームIDなら上書きされるため
 
     /// 現在時刻のみを取得する
     DateTime nowTime = DateTime(2022,12,10,DateTime.now().hour,DateTime.now().minute,DateTime.now().second);
@@ -879,17 +882,20 @@ class _MyHomePageState extends State<MyHomePage> {
     ///目標時間のみを取得する
     DateTime goalTime = DateTime(2022,12,10,goalTimeParse.hour,goalTimeParse.minute,goalTimeParse.second);
 
-    ///通知時間のみを取得する
-    DateTime notiTime = DateTime(2022,12,10,notificationTime.hour,notificationTime.minute,notificationTime.second);
-
     ///通知したい時間を算出 (目標時間 - 通知時間)
     int notiTimeSec = notificationTime.hour * 3600 +  notificationTime.minute*60 + notificationTime.second;
     int notifiSecond;
     ///通知したい時間
     DateTime dtNotifTime = goalTime.subtract(Duration(seconds: notiTimeSec)) ;
     ///通知したい時間 - 現在時刻 (秒換算)
+    debugPrint('goalTime:$goalTime');
+    debugPrint('notiTimeSec:$notiTimeSec');
+    debugPrint('dtNotifTime:$dtNotifTime');
+    debugPrint('nowTime:$nowTime');
+
     notifiSecond = dtNotifTime.difference(nowTime).inSeconds;
 
+    debugPrint('notifiSecond:$notifiSecond');
     if(notifiSecond <= 0){
       debugPrint('既に通知時間を過ぎているならローカル通知セットしない');
       return;
@@ -898,7 +904,7 @@ class _MyHomePageState extends State<MyHomePage> {
     ///通知セット
     await flutterLocalNotificationsPlugin.zonedSchedule(
         alarmID,
-        'はじめる習慣',
+        cnsAppTitle,
         '習慣開始まで、あと${notificationTime.hour}時間${notificationTime.minute}分です',
         tz.TZDateTime.now(tz.local).add(Duration(seconds: notifiSecond)),
         const NotificationDetails(
@@ -913,7 +919,7 @@ class _MyHomePageState extends State<MyHomePage> {
         uiLocalNotificationDateInterpretation:
         UILocalNotificationDateInterpretation.absoluteTime);
 
-    if(notifiSecond <= 0){
+    if(notifiSecond >= 0){
       debugPrint('$notifiSecond 秒後にローカル通知');
       return;
     }

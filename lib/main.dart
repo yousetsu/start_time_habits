@@ -539,6 +539,7 @@ class _MyHomePageState extends State<MyHomePage> {
       debugPrint('dtNowDateVs:${dtNowDate.toString()}');
       debugPrint('dtNowDateYest:${dtNowDateYest.toString()}');
 
+      //直前の日時が1日前だったら、連続実行回数をカウントアップ
       if (dtPreRealTime.year == dtNowDateYest.year
           && dtPreRealTime.month == dtNowDateYest.month
           && dtPreRealTime.day == dtNowDateYest.day) {
@@ -548,7 +549,7 @@ class _MyHomePageState extends State<MyHomePage> {
         setState(() {intComboNum = 1;});
       }
     }else{
-      //そうでなければカウントを1に戻す
+      //履歴テーブルになにもなければカウント１にする
       setState(() {intComboNum = 1;});
     }
 

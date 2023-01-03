@@ -499,7 +499,7 @@ class _MyHomePageState extends State<MyHomePage> {
     strPreStatus = await _loadStrRireki('status') ;
 
     //習慣状況テーブルにデータ保存
-    String habitsPath = p.join(dbPath, 'internal_assets.db');
+  //  String habitsPath = p.join(dbPath, 'internal_assets.db');
 
     //期限を守れているか判定
     //毎日
@@ -525,19 +525,16 @@ class _MyHomePageState extends State<MyHomePage> {
       strStatus = cnsStatusHabitsDue; //習慣を期限内に実行
     }
 
-    //実行回数をカウントアップ
+    ///実行回数カウント
     setState(() {intNum++;});
 
     DateTime dtPreRealTime = DateTime.utc(0,0,0);
-    DateTime dtNowDateYest = DateTime.utc(0,0,0);;
-    //直前の日時が1日前だったら、連続実行回数をカウントアップ
+    DateTime dtNowDateYest = DateTime.utc(0,0,0);
+
+    ///習慣継続日数カウント
     if(strPreRealTime != null && strPreRealTime.isNotEmpty) {
       dtPreRealTime = DateTime.parse(strPreRealTime.toString());
       dtNowDateYest = dtNowDate.add(const Duration(days: -1));
-
-      debugPrint('dtPreRealTime:${dtPreRealTime.toString()}');
-      debugPrint('dtNowDateVs:${dtNowDate.toString()}');
-      debugPrint('dtNowDateYest:${dtNowDateYest.toString()}');
 
       //直前の日時が1日前だったら、連続実行回数をカウントアップ
       if (dtPreRealTime.year == dtNowDateYest.year
@@ -552,28 +549,34 @@ class _MyHomePageState extends State<MyHomePage> {
       //履歴テーブルになにもなければカウント１にする
       setState(() {intComboNum = 1;});
     }
-
+    ///目標時間前にはじめた回数
     //期限を守っていればカウントアップ
     if(strStatus == cnsStatusHabitsDue){
       setState(() {intDueNum++;});
     }
-
+    ///目標時間前にはじめた継続回数
     //昨日のデータが存在しかつ、前回今回共に　習慣を守っていればカウントアップ
-    if(dtPreRealTime.year == dtNowDateYest.year
-        && dtPreRealTime.month == dtNowDateYest.month
-        && dtPreRealTime.day == dtNowDateYest.day) {
-      if(strPreStatus == cnsStatusHabitsDue && strStatus == cnsStatusHabitsDue){
+    if(strPreRealTime != null && strPreRealTime.isNotEmpty
+      && dtPreRealTime.year == dtNowDateYest.year
+          && dtPreRealTime.month == dtNowDateYest.month
+          && dtPreRealTime.day == dtNowDateYest.day
+          && strPreStatus == cnsStatusHabitsDue
+          && strStatus == cnsStatusHabitsDue) {
         setState(() {intComboDueNum++;});
+    } else{
+      setState(() {intComboDueNum = 1;});
+    }
+    ///リスタート回数
+    //前回の実績がなかったらカウントアップ
+    if(strPreRealTime != null && strPreRealTime.isNotEmpty) {
+      if (dtPreRealTime.year != dtNowDateYest.year
+          || dtPreRealTime.month != dtNowDateYest.month
+          || dtPreRealTime.day != dtNowDateYest.day) {
+        setState(() {intRestart++;});
       }
     }
 
-    //前回の実績がなかったらカウントアップ
-    if(dtPreRealTime.year != dtNowDateYest.year
-       || dtPreRealTime.month != dtNowDateYest.month
-        || dtPreRealTime.day != dtNowDateYest.day ){
-      setState(() {intRestart++;});
-    }
-    //習慣テーブルにアップデート
+    ///習慣テーブルにアップデート
     debugPrint('習慣テーブルにアップデート');
     String strHapitsPath = p.join(dbPath, 'internal_assets.db');
     Database database = await openDatabase(strHapitsPath, version: 1,
@@ -583,13 +586,11 @@ class _MyHomePageState extends State<MyHomePage> {
     String query =
         'Update habits set num = $intNum,combo_num = $intComboNum ,due_num = $intDueNum,combodue_num = $intComboDueNum ,restart = $intRestart';
     await database.transaction((txn) async {
-//      int id = await txn.rawInsert(query);
       await txn.rawInsert(query);
-      //   print("insert: $id");
     });
   //  database.close();
 
-    //履歴テーブルに登録
+   ///履歴テーブルに登録
     debugPrint('履歴テーブルに登録');
     String path = p.join(dbPath, 'rireki.db');
      database = await openDatabase(path, version: 1,
@@ -599,13 +600,11 @@ class _MyHomePageState extends State<MyHomePage> {
      query =
         'INSERT INTO rireki(goaltime,realtime, status,kaku1,kaku2,kaku3,kaku4) values("$strGoalTime","$strNowDate","$strStatus",null,null,null,null)';
     await database.transaction((txn) async {
-//      int id = await txn.rawInsert(query);
       await txn.rawInsert(query);
-      //   print("insert: $id");
     });
    // await database.close();
 
-   //アチーブメントユーザーマスタから達成状況をロード
+   ///アチーブメントユーザーマスタから達成状況をロード
     List<Map> achievementUserMap = await  _loadAchievementUser();
 
     //アチーブメント判定

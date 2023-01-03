@@ -100,7 +100,6 @@ class _HabitsScreenState extends State<HabitsScreen> {
     bool _isToday=isSameDay(date, DateTime.now());//今日？
     CalendarCarousel _calendar_default=CalendarCarousel();
     Color _today_col=_calendar_default.todayButtonColor;  //今日の背景色
-    debugPrint('strStatus:$strStatus');
     return Container(
         decoration: new BoxDecoration(
           color: _isToday ? _today_col :Theme.of(context).scaffoldBackgroundColor, borderRadius: BorderRadius.circular(1000),

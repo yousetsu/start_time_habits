@@ -423,8 +423,6 @@ class _MyHomePageState extends State<MyHomePage> {
          intDueNum = item['due_num'];
          intComboDueNum = item['combodue_num'];
          intRestart = item['restart'];
-         debugPrint('継続日数:$intComboNum');
-         debugPrint('リスタート数:$intRestart');
        });
     }
   //  await database.close();
@@ -494,11 +492,9 @@ class _MyHomePageState extends State<MyHomePage> {
     String? strPreStatus;
 
     //履歴テーブルから直前の時刻を取得
-    debugPrint('履歴テーブルから直前の時刻を取得');
     strPreRealTime = await _loadStrRireki('realtime') ;
 
     //履歴テーブルから直前のステータスを取得
-    debugPrint('履歴テーブルから直前のステータスを取得');
     strPreStatus = await _loadStrRireki('status') ;
 
     //期限を守れているか判定
@@ -582,7 +578,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     ///習慣テーブルにアップデート
-    debugPrint('習慣テーブルにアップデート');
     String strHapitsPath = p.join(dbPath, 'internal_assets.db');
     Database database = await openDatabase(strHapitsPath, version: 1,
         onCreate: (Database db, int version) async {
@@ -596,7 +591,6 @@ class _MyHomePageState extends State<MyHomePage> {
   //  database.close();
 
    ///履歴テーブルに登録
-    debugPrint('履歴テーブルに登録');
     String path = p.join(dbPath, 'rireki.db');
      database = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
@@ -638,13 +632,11 @@ class _MyHomePageState extends State<MyHomePage> {
       // }
 
       //アチーブメント判定
-      debugPrint('アチーブメント判定');
       if (item['num'] != 0 && item['num'] <= intNum) {
         boolAchievementFlg = true;
         strNo = item['No'];
         strTitle = item['title'];
         strContent = '$strTitle \n\n <達成条件>\n 習慣をはじめた回数　${item['num']}回以上\n ';
-        debugPrint('No:$strNo title:$strTitle content:$strContent');
       }
       if (item['combo_num'] != 0 && item['combo_num'] <= intComboNum) {
         boolAchievementFlg = true;
@@ -652,7 +644,6 @@ class _MyHomePageState extends State<MyHomePage> {
         strTitle = item['title'];
         strContent =
         '$strTitle \n\n <達成条件>\n 習慣をはじめた継続日数　${item['combo_num']}回以上\n ';
-        debugPrint('No:$strNo title:$strTitle content:$strContent');
       }
       if (item['due_num'] != 0 && item['due_num'] <= intDueNum) {
         boolAchievementFlg = true;
@@ -660,7 +651,6 @@ class _MyHomePageState extends State<MyHomePage> {
         strTitle = item['title'];
         strContent =
         '$strTitle \n\n <達成条件>\n 目標時間内にはじめた回数　${item['due_num']}回以上\n ';
-        debugPrint('No:$strNo title:$strTitle content:$strContent');
       }
       if (item['combodue_num'] != 0 && item['combodue_num'] <= intComboDueNum) {
         boolAchievementFlg = true;
@@ -668,7 +658,6 @@ class _MyHomePageState extends State<MyHomePage> {
         strTitle = item['title'];
         strContent =
         '$strTitle \n\n <達成条件>\n 目標時間内にはじめた継続日数　${item['combodue_num']}回以上\n ';
-        debugPrint('No:$strNo title:$strTitle content:$strContent');
       }
       if (item['restart'] != 0 && item['restart'] <= intRestart) {
         boolAchievementFlg = true;
@@ -676,7 +665,6 @@ class _MyHomePageState extends State<MyHomePage> {
         strTitle = item['title'];
         strContent =
         '$strTitle \n\n <達成条件>\n リスタートした回数　${item['restart']}回以上\n ';
-        debugPrint('No:$strNo title:$strTitle content:$strContent');
       }
     }
     //アチーブメントダイアログ表示（共通）
@@ -705,10 +693,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     ///明日の通知分をセット
     //そもそも通知制御しないのであれば通知セットしない
-    debugPrint('そもそも通知制御しないのであれば通知セットしない判定(ボタン押下時)');
-    debugPrint('setLocalNotification notificationFlg:$notificationFlg');
     if(notificationFlg == cnsNotificationOff){
-      debugPrint('そもそも通知制御しないのであれば通知セットしない(ボタン押下時)');
       return;
     }
     //明日の目標時刻タイマー時間算出
@@ -728,7 +713,6 @@ class _MyHomePageState extends State<MyHomePage> {
     notifiSecond = dtNotifTime.difference(nowTime).inSeconds;
 
     ///通知セット
-    debugPrint('そもそも通知制御しないのであれば通知セットしない判定(ボタン押下時)');
     await flutterLocalNotificationsPlugin.zonedSchedule(
         alarmID,
         cnsAppTitle,
@@ -745,13 +729,9 @@ class _MyHomePageState extends State<MyHomePage> {
         androidAllowWhileIdle: true,
         uiLocalNotificationDateInterpretation:
         UILocalNotificationDateInterpretation.absoluteTime);
-
     if(notifiSecond >= 0){
-      debugPrint('$notifiSecond 秒後にローカル通知（ボタン押下時）');
       return;
     }
-
-
   }
 /*------------------------------------------------------------------
 アチーブメントユーザーマスタロード
@@ -829,7 +809,6 @@ class _MyHomePageState extends State<MyHomePage> {
     DateTime dtNowDate = DateTime.now();
     //履歴テーブルから直前の日時を取得
     strPreRealTime = await _loadStrRireki('realtime');
-    debugPrint('strPreRealTime:$strPreRealTime');
     if(strPreRealTime != null && strPreRealTime.isNotEmpty){
       dtPreRealTime = DateTime.parse(strPreRealTime);
       if(dtNowDate.year == dtPreRealTime.year
@@ -855,10 +834,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> setLocalNotification() async {
 
     //そもそも通知制御しないのであれば通知セットしない
-    debugPrint('そもそも通知制御しないのであれば通知セットしない判定');
-    debugPrint('setLocalNotification notificationFlg:$notificationFlg');
     if(notificationFlg == cnsNotificationOff){
-      debugPrint('そもそも通知制御しないのであれば通知セットしない');
       return;
     }
     //既に本日分の履歴があれば既にアラームがセットされているはずなのでセットしない
@@ -871,7 +847,6 @@ class _MyHomePageState extends State<MyHomePage> {
       if (dtPreRealTime.year == DateTime.now().year
           && dtPreRealTime.month == DateTime.now().month
           && dtPreRealTime.day == DateTime.now().day) {
-        debugPrint('既に本日分の履歴があれば既にアラームがセットされているはずなのでセットしない');
         return;
       }
     }
@@ -891,16 +866,10 @@ class _MyHomePageState extends State<MyHomePage> {
     ///通知したい時間
     DateTime dtNotifTime = goalTime.subtract(Duration(seconds: notiTimeSec)) ;
     ///通知したい時間 - 現在時刻 (秒換算)
-    debugPrint('goalTime:$goalTime');
-    debugPrint('notiTimeSec:$notiTimeSec');
-    debugPrint('dtNotifTime:$dtNotifTime');
-    debugPrint('nowTime:$nowTime');
 
     notifiSecond = dtNotifTime.difference(nowTime).inSeconds;
 
-    debugPrint('notifiSecond:$notifiSecond');
     if(notifiSecond <= 0){
-      debugPrint('既に通知時間を過ぎているならローカル通知セットしない');
       return;
     }
 
@@ -923,7 +892,6 @@ class _MyHomePageState extends State<MyHomePage> {
         UILocalNotificationDateInterpretation.absoluteTime);
 
     if(notifiSecond >= 0){
-      debugPrint('$notifiSecond 秒後にローカル通知');
       return;
     }
   }

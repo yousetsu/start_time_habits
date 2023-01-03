@@ -115,7 +115,6 @@ class _AchievementScreenState extends State<AchievementScreen> {
     bool boolAchRelease = false;
     //アチーブメントを達成していないものは表示しない
     for (Map serchAchMap in achievementUserMap){
-      debugPrint('listNo: $listNo  serchAchMap:${serchAchMap['No']}');
       if( serchAchMap['No'] == listNo) {
         boolAchRelease = true;
       }

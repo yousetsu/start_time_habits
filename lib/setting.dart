@@ -246,17 +246,13 @@ class _SettingScreenState extends State<SettingScreen> {
   Future<void> setLocalNotification() async {
 
     //通知制御オンオフ判定
-    debugPrint('通知制御オンオフ判定');
     if(isOnNotification == false){
-      debugPrint('そもそも通知制御しないのであれば通知セットしない(設定画面)');
       return;
     }
-
     ///通知セットされているかどうか判定
     //→不要。同じアラームIDなら上書きされるため
 
     //タイマー時間算出
-    debugPrint('タイマー時間算出');
     String  strGoalTime;
     if (strMode == cnsModeEveryDay){
       strGoalTime = everyTime.toString();
@@ -288,12 +284,10 @@ class _SettingScreenState extends State<SettingScreen> {
     notifiSecond = dtNotifTime.difference(nowTime).inSeconds;
 
     if(notifiSecond <= 0){
-      debugPrint('既に通知時間を過ぎているならローカル通知セットしない(設定画面)');
       return;
     }
 
     ///通知セット
-    debugPrint('通知セット');
     await flutterLocalNotificationsPlugin.zonedSchedule(
         alarmID,
         cnsAppTitle,
@@ -310,10 +304,6 @@ class _SettingScreenState extends State<SettingScreen> {
         androidAllowWhileIdle: true,
         uiLocalNotificationDateInterpretation:
         UILocalNotificationDateInterpretation.absoluteTime);
-
-    if(notifiSecond >= 0){
-      debugPrint('$notifiSecond 秒後にローカル通知');
-    }
 
   }
   /*------------------------------------------------------------------
@@ -341,7 +331,6 @@ class _SettingScreenState extends State<SettingScreen> {
   void _showRewardedAd() async {
     int rewardcnt = 0;
     rewardcnt = await _loadRewardCnt();
-    debugPrint('rewardcnt:$rewardcnt');
     if(rewardcnt >= 2 ) {
       _rewardedAd!.setImmersiveMode(true);
       _rewardedAd!.show(

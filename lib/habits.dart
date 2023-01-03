@@ -3,6 +3,7 @@ import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
 import 'package:flutter_calendar_carousel/classes/event.dart';
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import './const.dart';
 
 List<Map> mapRireki = <Map>[];

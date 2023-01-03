@@ -7,3 +7,5 @@ const String cnsStatusHabitsDue = '1';
 
 const String cnsNotificationOff= '0';
 const String cnsNotificationOn = '1';
+
+const String cnsAppTitle= 'はじめる習慣';

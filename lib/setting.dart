@@ -67,6 +67,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         setState(() => {
                           everyTime = DateTime.utc(2016, 5, 1, value[0], value[1], 0),
                         _saveStrSetting('everystarttime',everyTime.toString()),
+                          setLocalNotification(),
                           loadSetting()
                         });
                       },
@@ -93,6 +94,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         setState(() => {
                           normalTime = DateTime.utc(2016, 5, 1, value[0], value[1], 0),
                           _saveStrSetting('normalstarttime',normalTime.toString()),
+                          setLocalNotification(),
                           loadSetting()
                         });
                       },
@@ -111,6 +113,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         setState(() => {
                           holidayTime = DateTime.utc(2016, 5, 1, value[0], value[1], 0),
                           _saveStrSetting('holidaystarttime',holidayTime.toString()),
+                         setLocalNotification(),
                           loadSetting()
                         });
                       },
@@ -228,9 +231,7 @@ class _SettingScreenState extends State<SettingScreen> {
     Database database = await openDatabase(path, version: 1);
     String query = "UPDATE setting set $field = '$value' ";
     await database.transaction((txn) async {
-      //int id = await txn.rawInsert(query);
       await txn.rawInsert(query);
-      //   print("insert: $id");
     });
  //   database.close();
   }
@@ -239,19 +240,24 @@ class _SettingScreenState extends State<SettingScreen> {
 //-------------------------------------------------------------
   Future<void> setLocalNotification() async {
 
+    //通知制御オンオフ判定
+    debugPrint('通知制御オンオフ判定');
     if(isOnNotification == false){
       debugPrint('そもそも通知制御しないのであれば通知セットしない(設定画面)');
       return;
     }
 
     //通知セットされているかどうか判定
+    debugPrint('通知セットされているかどうか判定');
     final List<ActiveNotification>? activeNotifications = await  flutterLocalNotificationsPlugin.getActiveNotifications();
     //既に通知がセットされているのであればローカル通知セットしない
+    debugPrint('activeNotifications:${activeNotifications.toString()}');
     if(activeNotifications == null){
       debugPrint('既に通知がセットされているのであればローカル通知セットしない(設定画面)');
       return;
     }
     //タイマー時間算出
+    debugPrint('タイマー時間算出');
     String  strGoalTime;
     if (strMode == cnsModeEveryDay){
       strGoalTime = everyTime.toString();
@@ -288,10 +294,11 @@ class _SettingScreenState extends State<SettingScreen> {
     }
 
     ///通知セット
+    debugPrint('通知セット');
     await flutterLocalNotificationsPlugin.zonedSchedule(
         alarmID,
-        '勉強時間アラーム',
-        '習慣開始まで、あと何時間何分です。',
+        cnsAppTitle,
+        '習慣開始まで、あと${notificationTime.hour}時間${notificationTime.minute}分です。',
         tz.TZDateTime.now(tz.local).add(Duration(seconds: notifiSecond)),
         const NotificationDetails(
             android: AndroidNotificationDetails(
@@ -305,10 +312,11 @@ class _SettingScreenState extends State<SettingScreen> {
         uiLocalNotificationDateInterpretation:
         UILocalNotificationDateInterpretation.absoluteTime);
 
-    if(notifiSecond <= 0){
+    if(notifiSecond >= 0){
       debugPrint('$notifiSecond 秒後にローカル通知');
-      return;
+      debugPrint('activeNotifications:${activeNotifications.toString()}');
     }
+
   }
 }
 

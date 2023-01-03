@@ -5,7 +5,6 @@ import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
 import './const.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'main.dart';
 //ローカル通知の時間をセットするためタイムゾーンの定義が必要
@@ -342,7 +341,8 @@ class _SettingScreenState extends State<SettingScreen> {
   void _showRewardedAd() async {
     int rewardcnt = 0;
     rewardcnt = await _loadRewardCnt();
-    if(rewardcnt >= 3 ) {
+    debugPrint('rewardcnt:$rewardcnt');
+    if(rewardcnt >= 2 ) {
       _rewardedAd!.setImmersiveMode(true);
       _rewardedAd!.show(
           onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
@@ -365,9 +365,9 @@ class _SettingScreenState extends State<SettingScreen> {
     String dbPath = await getDatabasesPath();
     String path = p.join(dbPath, 'internal_assets.db');
     Database database = await openDatabase(path, version: 1);
-    List<Map> result = await database.rawQuery("SELECT reawardcnt From setting  limit 1");
+    List<Map> result = await database.rawQuery("SELECT rewardcnt From setting  limit 1");
     for (Map item in result) {
-      setState(() {rewardcnt = item['reawardcnt'];});
+      setState(() {rewardcnt = item['rewardcnt'];});
     }
     return rewardcnt;
   }

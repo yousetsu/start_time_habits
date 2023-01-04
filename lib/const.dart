@@ -11,7 +11,7 @@ const String cnsNotificationOn = '1';
 const String cnsAppTitle= 'はじめる習慣';
 
 //広告ID
-//test
+//testID
 const String strCnsBannerID = 'ca-app-pub-3940256099942544/6300978111'; //Banner
 const String strCnsRewardID = 'ca-app-pub-3940256099942544/5224354917'; //Reward
 //本番

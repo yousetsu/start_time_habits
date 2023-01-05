@@ -65,7 +65,7 @@ class _AchievementScreenState extends State<AchievementScreen> {
         child: ListTile(
             title:  Row(children:  <Widget>[
            //   Text('', style:  const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-              Text('獲得した称号', style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+              Text('称号一覧', style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
             ])));
 
   }
@@ -92,13 +92,15 @@ class _AchievementScreenState extends State<AchievementScreen> {
         //     ? Colors.green
         //     : Colors.grey,
          leading: boolAchieveReleaseFlg
-             ? const Icon(Icons.star,color: Colors.blue,size: 20,)
-             : const Icon(Icons.star_border,size: 20,),
+             ? const Icon(Icons.star,color: Colors.blue,size: 18,)
+             : const Icon(Icons.star_border,size: 18,),
         title:Text('${item['title']}',
           style:  TextStyle(color: boolAchieveReleaseFlg ? Colors.black : Colors.grey,fontSize: 13),),
               dense: true,
               selected: listNo == item['No'],
-              onTap: () {listNo = item['No'];_tapTile();}
+              onTap: () {listNo = item['No'];_tapTile();},
+
+
       ));
     }
     setState(() {

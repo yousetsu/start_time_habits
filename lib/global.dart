@@ -1,10 +1,10 @@
 
 
 List<Map<String, dynamic>> achievementMapList = [
-  {'No': '10', 'title': '新たな習慣のはじまり','body':'新たな習慣のスタートです！今日は始められたことを高く評価して、すぐヤメちゃっても良いと思います。','num':1,'combo_num':0,'due_num':0,'combodue_num':0,'restart':0},
-  {'No': '20', 'title': '2歩目が大事','body':'映画でもなんでも２で終わっちゃうことがあると思うので、２回目って大事だと思います。','num':2,'combo_num':0,'due_num':0,'combodue_num':0,'restart':0},
-  {'No': '30', 'title': '3代目！','body':'王様や将軍は３代目が重要とよく言われます。習慣においても大事な回数です。','num':3,'combo_num':0,'due_num':0,'combodue_num':0,'restart':0},
-  {'No': '40', 'title': '3代目！継続を守る','body':'王様や将軍は３代目が重要とよく言われます。習慣においても大事な回数です。とりあえず毎日続けることが大事！毎日ポチポチ習慣を開始していきましょう！','num':0,'combo_num':3,'due_num':0,'combodue_num':0,'restart':0},
+  {'No': '10', 'title':'新たな習慣のはじまり','body':'新たな習慣のスタートです！今日は始められたことを高く評価して、すぐヤメちゃっても良いと思います。','num':1,'combo_num':0,'due_num':0,'combodue_num':0,'restart':0},
+  {'No': '20', 'title':'2歩目が大事','body':'映画でもなんでも２で終わっちゃうことがあると思うので、２回目って大事だと思います。','num':2,'combo_num':0,'due_num':0,'combodue_num':0,'restart':0},
+  {'No': '30', 'title':'3代目！','body':'王様や将軍は３代目が重要とよく言われます。習慣においても大事な回数です。','num':3,'combo_num':0,'due_num':0,'combodue_num':0,'restart':0},
+  {'No': '40', 'title':'3代目！継続を守る','body':'王様や将軍は３代目が重要とよく言われます。習慣においても大事な回数です。とりあえず毎日続けることが大事！毎日ポチポチ習慣を開始していきましょう！','num':0,'combo_num':3,'due_num':0,'combodue_num':0,'restart':0},
   {'No':'50','title':'3代目！目標時間を守る','body':'王様や将軍は３代目が重要とよく言われます。習慣においても大事な回数です。３回も目標時間内に開始できている！忙しければ忙しい人ほどこれができるのはすごい！','num':0,'combo_num':0,'due_num':3,'combodue_num':0,'restart':0},
   {'No':'60','title':'3代目！継続し、目標時間も守る','body':'王様や将軍は３代目が重要とよく言われます。習慣においても大事な回数です。３回も継続して目標時間も守る！素晴らしい！','num':0,'combo_num':0,'due_num':0,'combodue_num':3,'restart':0},
   {'No':'70','title':'良い調子！','body':'良い調子です！とりあえず開始することだけに集中しましょう！','num':5,'combo_num':0,'due_num':0,'combodue_num':0,'restart':0},

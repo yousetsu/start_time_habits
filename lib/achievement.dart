@@ -61,11 +61,13 @@ class _AchievementScreenState extends State<AchievementScreen> {
     return Container(
         decoration:  const BoxDecoration(
             border: Border(bottom: BorderSide(width: 1.0, color: Colors.grey))),
+
         child: ListTile(
             title:  Row(children:  <Widget>[
-              Text('No       ', style:  const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-              Text('称号タイトル', style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+           //   Text('', style:  const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+              Text('獲得した称号', style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
             ])));
+
   }
   void getItems() async {
     List<Widget> list = <Widget>[];
@@ -89,10 +91,10 @@ class _AchievementScreenState extends State<AchievementScreen> {
         // tileColor: (item['getupstatus'].toString() == cnsGetupStatusS)
         //     ? Colors.green
         //     : Colors.grey,
-        // leading: (item['getupstatus'].toString() == cnsGetupStatusS)
-        //     ? const Icon(Icons.thumb_up)
-        //     : const Icon(Icons.redo),
-        title:Text('${item['No']}        ${item['title']}',
+         leading: boolAchieveReleaseFlg
+             ? const Icon(Icons.star,color: Colors.blue,size: 20,)
+             : const Icon(Icons.star_border,size: 20,),
+        title:Text('${item['title']}',
           style:  TextStyle(color: boolAchieveReleaseFlg ? Colors.black : Colors.grey,fontSize: 13),),
               dense: true,
               selected: listNo == item['No'],

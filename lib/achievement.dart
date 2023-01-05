@@ -93,7 +93,7 @@ class _AchievementScreenState extends State<AchievementScreen> {
         //     ? const Icon(Icons.thumb_up)
         //     : const Icon(Icons.redo),
         title:Text('${item['No']}        ${item['title']}',
-          style:  TextStyle(color: boolAchieveReleaseFlg ? Colors.black : Colors.grey,fontSize: 15),),
+          style:  TextStyle(color: boolAchieveReleaseFlg ? Colors.black : Colors.grey,fontSize: 13),),
               dense: true,
               selected: listNo == item['No'],
               onTap: () {listNo = item['No'];_tapTile();}

@@ -469,6 +469,10 @@ class _MyHomePageState extends State<MyHomePage> {
   void saveRirekiHabitsData() async {
     String strNowDate = DateTime.now().toString();//ボタンを押下した時の時刻
     String strGoalTime;
+    //testCode
+    //DateTime dtTestNowDate = DateTime.utc(2023,1,3,8,0,0);
+    //strNowDate = dtTestNowDate.toString();
+    //
     DateTime dtNowDate = DateTime.parse(strNowDate.toString());
     //目標時間比較用の現在日時変数
     DateTime dtNowDate20160501 = DateTime.utc(2016,5,1,dtNowDate.hour,dtNowDate.minute,0);
@@ -666,6 +670,16 @@ class _MyHomePageState extends State<MyHomePage> {
         strContent =
         '$strTitle \n\n <達成条件>\n リスタートした回数　${item['restart']}回以上\n ';
       }
+      //アチーブメントユーザーマスタに登録
+      path = p.join(dbPath, 'achievement.db');
+      database = await openDatabase(path, version: 1,
+          onCreate: (Database db, int version) async {
+            await db.execute(strCnsSqlCreateAchievement);
+          });
+      query = 'INSERT INTO achievement_user(No,kaku1,kaku2,kaku3,kaku4) values("$strNo",null,null,null,null)';
+      await database.transaction((txn) async {
+        await txn.rawInsert(query);
+      });
     }
     //アチーブメントダイアログ表示（共通）
       if(boolAchievementFlg){
@@ -678,16 +692,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 TextButton(child: Text('閉じる'), onPressed: () => Navigator.pop<String>(context, 'Yes')),
               ],
             ));
-        //アチーブメントユーザーマスタに登録
-        path = p.join(dbPath, 'achievement.db');
-        database = await openDatabase(path, version: 1,
-            onCreate: (Database db, int version) async {
-          await db.execute(strCnsSqlCreateAchievement);
-        });
-        query = 'INSERT INTO achievement_user(No,kaku1,kaku2,kaku3,kaku4) values("$strNo",null,null,null,null)';
-        await database.transaction((txn) async {
-          await txn.rawInsert(query);
-        });
+
    //     await database.close();
       }
 
